@@ -121,7 +121,7 @@
 
         <v-divider></v-divider>
 
-        <v-list-item link to="/">
+        <v-list-item link to="https://damianguilisasti.com.ar">
           <v-list-item-action>
             <v-icon>mdi-play</v-icon>
           </v-list-item-action>
