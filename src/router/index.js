@@ -14,6 +14,8 @@ import AdminEmails from "../components/AdminEmails";
 import AdminUsers from "../components/AdminUsers";
 import AdminEditAccount from "../components/AdminEditAccount";
 import ErrorPath from "../views/404";
+import ResetPassword from "../views/ResetPassword";
+import AdminSliderSettings from "../components/AdminSliderSettings";
 
 import store from "../store";
 
@@ -33,6 +35,11 @@ const routes = [
     path: "/login",
     component: Login,
     name: "Login",
+  },
+  {
+    path: "/resetPassword/:token",
+    component: ResetPassword,
+    name: "ResetPassword",
   },
   {
     path: "/admin",
@@ -87,6 +94,11 @@ const routes = [
         path: "Settings",
         component: AdminSettings,
         name: "AdminSettings",
+      },
+      {
+        path: "settings/slider",
+        component: AdminSliderSettings,
+        name: "AdminSliderSettings",
       },
       {
         path: "Expenses",

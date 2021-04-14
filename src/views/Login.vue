@@ -30,7 +30,7 @@
             lg="5"
             class="d-flex justify-center align-center col-right"
           >
-            <div class="login-wrapper pt-sm-0">
+            <div class="login-wrapper pt-sm-0" v-if="showLoginForm">
               <div class="my-16">
                 <p class="display-2 text-center font-weight-medium my-10">
                   ¡Hola!
@@ -65,9 +65,53 @@
                       >Ingresar</v-btn
                     >
                   </v-col>
-                  <v-col cols="12" lg="6" md="6"
-                    ><v-btn class="btn-forget" small text
+                  <v-col cols="12" lg="6" md="6" class="text-right"
+                    ><v-btn
+                      class="btn-forget"
+                      small
+                      text
+                      @click="forgotPassword"
                       >Olvidé la contraseña</v-btn
+                    ></v-col
+                  >
+                </v-row>
+              </div>
+            </div>
+            <div class="login-wrapper pt-sm-0" v-if="!showLoginForm">
+              <div class="my-16">
+                <p class="display-2 text-center font-weight-medium my-10">
+                  Resetear contraseña!
+                </p>
+                <v-form>
+                  <v-text-field
+                    label="Email"
+                    name="login"
+                    prepend-icon="mdi-account"
+                    type="text"
+                    v-model="resetEmail"
+                  ></v-text-field>
+
+                  <v-flex class="red--text" v-if="errorMessage">
+                    {{ errorMessage }}
+                  </v-flex>
+                </v-form>
+                <v-row>
+                  <v-col cols="12" lg="6" md="6">
+                    <v-btn
+                      @click="resetPassword"
+                      class="btn-login"
+                      elevation="2"
+                      small
+                      >Resetear</v-btn
+                    >
+                  </v-col>
+                  <v-col cols="12" lg="6" md="6" class="text-right"
+                    ><v-btn
+                      class="btn-forget"
+                      small
+                      text
+                      @click="showLoginForm = true"
+                      >Volver al Login</v-btn
                     ></v-col
                   >
                 </v-row>
@@ -91,8 +135,34 @@ export default {
     password: "",
     errorMessage: null,
     show: false,
+    showLoginForm: true,
+    resetEmail: "",
   }),
   methods: {
+    forgotPassword() {
+      this.showLoginForm = false;
+    },
+    resetPassword() {
+      let me = this;
+      axios
+        .post("/user/forgotpassword", { email: this.resetEmail })
+        .then(function (response) {
+          me.$store.dispatch("setSnackbar", {
+            text: `Se envío un email a tu correo para que puedas restablecer tu contraseña.`,
+          });
+        })
+        .catch(function (error) {
+          if (error.response.status === 404 || 401) {
+            me.$store.dispatch("setSnackbar", {
+              text: `No existe un usuario con este email.`,
+              color: "red",
+            });
+          }
+        });
+
+      //Comunicarme con el backend mediante axios, procesar el reset del password, enviar un email con un link y luego devolver un token con un tiempo para que se pueda
+      //cargar la nueva contraseña.
+    },
     login() {
       let me = this;
       axios

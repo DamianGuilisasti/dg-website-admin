@@ -3,7 +3,6 @@
     <h1 class="pb-6">Envío de Factura por Email</h1>
     <v-select
       :items="clients"
-      :error-messages="selectErrors"
       label="Seleccionar cliente"
       required
       @change="selectClient"

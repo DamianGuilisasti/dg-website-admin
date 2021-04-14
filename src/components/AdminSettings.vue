@@ -39,6 +39,18 @@
               <v-row>
                 <v-col cols="12">
                   <v-text-field
+                    label="Dirección de la empresa"
+                    v-model="companyAddress"
+                    outlined
+                    persistent-hint
+                    hint="Dejar en vacío para desactivarlo - Esta información se mostrará toda la página."
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
                     label="Email de la empresa"
                     v-model="companyEmail"
                     outlined
@@ -50,14 +62,15 @@
 
               <v-row>
                 <v-col cols="12">
-                  <v-textarea
+                  <TipTapEditor />
+<!--                   <v-textarea
                     outlined
                     name="input-7-4"
                     v-model="aboutInfo"
                     label="Información sobre la empresa"
                     persistent-hint
                     hint="Dejar en vacío para desactivarlo - Esta información se mostrará en la página Nosotros."
-                  ></v-textarea>
+                  ></v-textarea> -->
                 </v-col>
               </v-row>
 
@@ -276,11 +289,16 @@
 
 <script>
 import axios from "axios";
+import TipTapEditor from "../components/TipTapEditor";
 export default {
+  components: {
+    TipTapEditor,
+  },
   data: () => ({
     companyName: "",
     companyEmail: "",
     companyPhone: "",
+    companyAddress: "",
     dataId: "",
     aboutInfo: "",
     facebook: "",
@@ -309,6 +327,7 @@ export default {
         me.companyName = response.data[0].companyName;
         me.companyPhone = response.data[0].companyPhone;
         me.companyEmail = response.data[0].companyEmail;
+        me.companyAddress = response.data[0].companyAddress;
         me.phone = response.data[0].whatsapp.phone;
         me.text = response.data[0].whatsapp.text;
         me.facebook = response.data[0].socialMedia.facebook;
@@ -365,6 +384,7 @@ export default {
           companyName: this.companyName,
           companyPhone: this.companyPhone,
           companyEmail: this.companyEmail,
+          companyAddress: this.companyAddress,
         })
         .then(function (response) {
           me.$store.dispatch("setSnackbar", {
