@@ -91,7 +91,7 @@ const routes = [
         name: "AdminBudgets",
       },
       {
-        path: "Settings",
+        path: "settings/company",
         component: AdminSettings,
         name: "AdminSettings",
       },

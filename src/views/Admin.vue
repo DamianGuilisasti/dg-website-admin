@@ -92,15 +92,6 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item link to="/admin/expenses">
-          <v-list-item-action>
-            <v-icon>mdi-trending-down</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Slider</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
         <v-list-item link to="/admin/blog">
           <v-list-item-action>
             <v-icon>mdi-post-outline</v-icon>
@@ -119,15 +110,6 @@
           </v-list-item-content>
         </v-list-item> -->
 
-        <v-list-item link to="/admin/settings">
-          <v-list-item-action>
-            <v-icon>mdi-cog</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Configuración</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
         <v-list-group prepend-icon="" no-action>
           <template v-slot:activator>
             <v-list-item-action>
@@ -137,6 +119,15 @@
               <v-list-item-title>Configuración</v-list-item-title>
             </v-list-item-content>
           </template>
+
+          <v-list-item link to="/admin/settings/company">
+            <v-list-item-content>
+              <v-list-item-title>Empresa</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-icon>
+              <v-icon>mdi-office-building</v-icon>
+            </v-list-item-icon>
+          </v-list-item>
 
           <v-list-item link to="/admin/settings/slider">
             <v-list-item-content>
