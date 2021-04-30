@@ -260,7 +260,7 @@ export default {
       return this.editedIndex === -1 ? "Nuevo gasto" : "Editar gasto";
     },
   },
-  mounted() {
+  created() {
     this.initialize();
   },
 };

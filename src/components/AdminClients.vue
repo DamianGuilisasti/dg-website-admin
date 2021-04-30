@@ -765,7 +765,7 @@ export default {
       return this.editedIndex === -1 ? "Nuevo cliente" : "Editar cliente";
     },
   },
-  mounted() {
+  created() {
     this.initialize();
     this.servicesSelect();
   },

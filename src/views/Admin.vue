@@ -29,14 +29,14 @@
           </v-list-item-content>
         </v-list-item>
 
-        <!--         <v-list-item link to="/admin/configuracion/informacion-nosotros">
+        <v-list-item link to="/admin/portfolio">
           <v-list-item-action>
             <v-icon>mdi-briefcase-outline</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Portafolio</v-list-item-title>
           </v-list-item-content>
-        </v-list-item> -->
+        </v-list-item>
 
         <v-list-item link to="/admin/clients">
           <v-list-item-action>
@@ -135,6 +135,24 @@
             </v-list-item-content>
             <v-list-item-icon>
               <v-icon>mdi-image-multiple</v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+
+          <v-list-item link to="/admin/settings/clientslogo">
+            <v-list-item-content>
+              <v-list-item-title>Clientes</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-icon>
+              <v-icon>mdi-account-group</v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+
+          <v-list-item link to="/admin/settings/colors">
+            <v-list-item-content>
+              <v-list-item-title>Colores</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-icon>
+              <v-icon>mdi-palette</v-icon>
             </v-list-item-icon>
           </v-list-item>
         </v-list-group>
@@ -254,7 +272,6 @@ export default {
 
     //this.getTheme();
   },
-  mounted() {},
 };
 </script>
 

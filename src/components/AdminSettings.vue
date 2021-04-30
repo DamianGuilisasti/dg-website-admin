@@ -62,15 +62,8 @@
 
               <v-row>
                 <v-col cols="12">
-                  <TipTapEditor />
-<!--                   <v-textarea
-                    outlined
-                    name="input-7-4"
-                    v-model="aboutInfo"
-                    label="Información sobre la empresa"
-                    persistent-hint
-                    hint="Dejar en vacío para desactivarlo - Esta información se mostrará en la página Nosotros."
-                  ></v-textarea> -->
+                  <p class="mb-2 aboutCompany">Información sobre la empresa:</p>
+                  <vue-editor v-model="aboutInfo" />
                 </v-col>
               </v-row>
 
@@ -78,6 +71,77 @@
                 <v-col>
                   <v-btn color="success" class="mr-4 mt-4" @click="updateInfo"
                     >Guardar cambios</v-btn
+                  >
+                </v-col>
+              </v-row>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              <h3 class="mb--0">Imagen de la empresa</h3>
+              <template v-slot:actions>
+                <v-icon color="primary"> $expand </v-icon>
+              </template>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-row>
+                <v-col cols="12">
+                  <v-file-input
+                    :loading="loadingLogo"
+                    v-if="!companyImg.imageURL"
+                    v-model="imageUploaded"
+                    color="deep-purple accent-4"
+                    label="Imagen de la empresa"
+                    placeholder="Seleccionar imagen"
+                    prepend-icon="mdi-paperclip"
+                    outlined
+                    persistent-hint
+                    hint="La imagen debe ser de formato PNG o JPG."
+                    :show-size="1000"
+                  >
+                    <template v-slot:selection="{ index, text }">
+                      <v-chip
+                        v-if="index < 2"
+                        color="deep-purple accent-4"
+                        dark
+                        label
+                        small
+                      >
+                        {{ text }}
+                      </v-chip>
+
+                      <span
+                        v-else-if="index === 2"
+                        class="overline grey--text text--darken-3 mx-2"
+                      >
+                        +{{ files.length - 2 }} File(s)
+                      </span>
+                    </template>
+                  </v-file-input>
+                </v-col>
+                <v-col cols="12">
+                  <img
+                    height="200px"
+                    :src="companyImg.imageURL"
+                    v-if="companyImg.imageURL"
+                /></v-col>
+              </v-row>
+
+              <v-row>
+                <v-col>
+                  <v-btn
+                    color="success"
+                    class="mr-4 mt-4"
+                    @click="updateCompanyImg"
+                    >Guardar cambios</v-btn
+                  >
+                  <v-btn
+                    v-if="imageURL"
+                    color="red--text"
+                    class="mr-4 mt-4"
+                    @click="deleteCompanyImg"
+                    >Eliminar imagen</v-btn
                   >
                 </v-col>
               </v-row>
@@ -289,16 +353,17 @@
 
 <script>
 import axios from "axios";
-import TipTapEditor from "../components/TipTapEditor";
+import { VueEditor } from "vue2-editor";
 export default {
   components: {
-    TipTapEditor,
+    VueEditor,
   },
   data: () => ({
     companyName: "",
     companyEmail: "",
     companyPhone: "",
     companyAddress: "",
+    companyImg: "",
     dataId: "",
     aboutInfo: "",
     facebook: "",
@@ -318,7 +383,7 @@ export default {
     },
     loadingLogo: false,
   }),
-  mounted() {
+  created() {
     let me = this;
     axios
       .get("settings/list")
@@ -338,12 +403,33 @@ export default {
         me.twitter = response.data[0].socialMedia.twitter;
         me.imageURL = response.data[0].logoURL.imageURL;
         me.dataId = response.data[0]._id;
+        me.companyImg = response.data[0].companyImg;
       })
       .catch(function (error) {
         console.log(error);
       });
   },
   methods: {
+    deleteCompanyImg() {
+      let me = this;
+      axios
+        .put("settings/deleteCompanyImg", { _id: this.dataId })
+        .then(function (response) {
+          me.imageUploaded = null;
+          me.updateNewCompanyImg();
+          me.$store.dispatch("setSnackbar", {
+            text: "Se eliminó correctamente la imagen.",
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+          me.$store.dispatch("setSnackbar", {
+            text:
+              "Hubo un error al eliminar la imagen, por favor actualice la página e intente nuevamente.",
+            color: "error",
+          });
+        });
+    },
     deleteLogo() {
       let me = this;
       axios
@@ -364,6 +450,17 @@ export default {
           });
         });
     },
+    updateNewCompanyImg() {
+      let me = this;
+      axios
+        .get("settings/list")
+        .then(function (response) {
+          me.companyImg = response.data[0].companyImg;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
     updateNewLogo() {
       let me = this;
       axios
@@ -377,6 +474,7 @@ export default {
     },
     updateInfo() {
       let me = this;
+      console.log(this.aboutInfo)
       axios
         .put("settings/updateInfo", {
           _id: this.dataId,
@@ -414,7 +512,7 @@ export default {
         })
         .then(function (response) {
           me.$store.dispatch("setSnackbar", {
-            text: "Se actualizo correctamente las redes sociales.",
+            text: "Se actuxalizo correctamente las redes sociales.",
           });
         })
         .catch(function (error) {
@@ -482,6 +580,40 @@ export default {
           });
         });
     },
+    updateCompanyImg() {
+      if (this.imageFile === "") {
+        this.snackbarError = true;
+        return;
+      }
+      this.loadingLogo = true;
+      let me = this;
+      let formData = new FormData();
+
+      formData.append("_id", this.dataId);
+      formData.append("image", this.imageFile);
+
+      axios
+        .put("settings/updateCompanyImg", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then(function (response) {
+          me.updateNewCompanyImg();
+          me.loadingLogo = false;
+          me.$store.dispatch("setSnackbar", {
+            text: "Se actualizo correctamente la imagen.",
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+          me.$store.dispatch("setSnackbar", {
+            text:
+              "Hubo un error al actualizar el logo, por favor actualice la página e intente nuevamente.",
+            color: "error",
+          });
+        });
+    },
   },
   watch: {
     imageUploaded: function () {
@@ -498,5 +630,18 @@ export default {
 
 .imageURL:hover {
   background-color: rgba(0, 0, 0, 0.6);
+}
+
+.addNew {
+  border-style: dashed !important;
+  width: 250px;
+  height: 300px;
+  cursor: pointer;
+  display: inline-flex !important;
+  float: left;
+}
+
+.aboutCompany{
+  color: rgb(0 0 0 / 60%);
 }
 </style>

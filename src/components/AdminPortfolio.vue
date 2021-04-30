@@ -1,14 +1,14 @@
 <template>
   <div>
-    <h1 class="pb-6">Servicios</h1>
+    <h1 class="pb-6">Portfolio</h1>
     <v-card>
       <v-data-table
         :headers="headers"
         :items="services"
         :search="search"
         :loading="loadingData"
-        loading-text="Cargando servicios... Por favor espere."
-        no-data-text="No hay información de servicios, por favor cargue nuevos servicios."
+        loading-text="Cargando portfolios... Por favor espere."
+        no-data-text="No hay información de portfolios, por favor cargue nuevos portfolios."
       >
         <template v-slot:item.state="{ item }">
           <v-chip :color="getStateColor(item.state)" dark>
@@ -28,7 +28,7 @@
               ></v-text-field>
             </v-card-title>
             <v-spacer></v-spacer>
-            <v-dialog v-model="dialog" max-width="500px">
+            <v-dialog fullscreen v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
                   color="primary"
@@ -36,7 +36,7 @@
                   class="mb-2"
                   v-bind="attrs"
                   v-on="on"
-                  >Agregar servicio</v-btn
+                  >Agregar portfolio</v-btn
                 >
               </template>
               <v-card>
@@ -47,6 +47,13 @@
                 <v-card-text>
                   <v-container>
                     <v-row align="center" justify="space-around">
+                      <v-col cols="12">
+                        <v-select
+                          label="Seleccione el cliente"
+                          v-model="editedItem.serviceType"
+                          :items="clients"
+                        ></v-select>
+                      </v-col>
                       <v-col cols="12">
                         <v-text-field
                           v-model="editedItem.name"
@@ -66,14 +73,6 @@
                           v-model="editedItem.price"
                           label="Precio"
                         ></v-text-field>
-                      </v-col>
-
-                      <v-col cols="12">
-                        <v-select
-                          label="Tipo de servicio"
-                          v-model="editedItem.serviceType"
-                          :items="servicesType"
-                        ></v-select>
                       </v-col>
                     </v-row>
                   </v-container>
@@ -126,28 +125,16 @@ export default {
     search: "",
     headers: [
       {
-        text: "Nombre",
+        text: "Cliente",
         align: "start",
         filterable: true,
-        value: "name",
-      },
-      {
-        text: "Descripción",
-        value: "description",
-      },
-      {
-        text: "Tipo de servicio",
-        value: "serviceType",
-      },
-      {
-        text: "Precio",
-        filterable: true,
-        value: "price",
+        value: "client",
       },
       { text: "Estado", filterable: true, value: "state" },
       { text: "Acciones", value: "actions" },
     ],
     services: [],
+    clients: []
   }),
   methods: {
     //DataTable
@@ -176,7 +163,7 @@ export default {
         .then(function (response) {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
-            text: `Se desactivó correctamente el servicio.`,
+            text: `Se desactivó correctamente el portfolio.`,
           });
         })
         .catch(function (error) {
@@ -199,7 +186,7 @@ export default {
         .then(function (response) {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
-            text: `Se activó correctamente el servicio.`,
+            text: `Se activó correctamente el portfolio.`,
           });
         })
         .catch(function (error) {
@@ -216,7 +203,7 @@ export default {
     deleteItem(item) {
       let me = this;
       let serviceId = item._id;
-      confirm("Estás a punto de eliminar el servicio ¿Continuar?") &&
+      confirm("Estás a punto de eliminar el portfolio ¿Continuar?") &&
         axios
           .delete("services/delete", {
             params: { id: serviceId },
@@ -227,7 +214,7 @@ export default {
           .then(function (response) {
             me.initialize();
             me.$store.dispatch("setSnackbar", {
-              text: `Se eliminó correctamente el servicio.`,
+              text: `Se eliminó correctamente el portfolio.`,
             });
           })
           .catch(function (error) {
@@ -263,7 +250,7 @@ export default {
           .then(function (response) {
             me.initialize();
             me.$store.dispatch("setSnackbar", {
-              text: `Se actualizó correctamente el servicio.`,
+              text: `Se actualizó correctamente el portfolio.`,
             });
           })
           .catch(function (error) {
@@ -287,7 +274,7 @@ export default {
           .then(function (response) {
             me.initialize();
             me.$store.dispatch("setSnackbar", {
-              text: `Se agregó correctamente el servicio.`,
+              text: `Se agregó correctamente el portfolio.`,
             });
           })
           .catch(function (error) {
@@ -310,14 +297,28 @@ export default {
           console.log(error);
         });
     },
+    getClients() {
+      let me = this;
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
+      axios
+        .get("clients/list", configuration)
+        .then(function (response) {
+          me.clients = response.data;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "Nuevo servicio" : "Editar servicio";
+      return this.editedIndex === -1 ? "Nuevo portfolio" : "Editar portfolio";
     },
   },
   created() {
     this.initialize();
+    this.getClients();
   },
 };
 </script>

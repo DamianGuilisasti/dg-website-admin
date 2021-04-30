@@ -16,6 +16,9 @@ import AdminEditAccount from "../components/AdminEditAccount";
 import ErrorPath from "../views/404";
 import ResetPassword from "../views/ResetPassword";
 import AdminSliderSettings from "../components/AdminSliderSettings";
+import AdminClientsImages from "../components/AdminClientsImages";
+import AdminColors from "../components/AdminColors";
+import AdminPortfolio from "../components/AdminPortfolio"
 
 import store from "../store";
 
@@ -66,6 +69,11 @@ const routes = [
         name: "AdminServices",
       },
       {
+        path: "Portfolio",
+        component: AdminPortfolio,
+        name: "AdminPortfolio",
+      },
+      {
         path: "Clients",
         component: AdminClients,
         name: "AdminClients",
@@ -99,6 +107,16 @@ const routes = [
         path: "settings/slider",
         component: AdminSliderSettings,
         name: "AdminSliderSettings",
+      },
+      {
+        path: "settings/clientslogo",
+        component: AdminClientsImages,
+        name: "AdminClientsImages",
+      },
+      {
+        path: "settings/colors",
+        component: AdminColors,
+        name: "AdminColors",
       },
       {
         path: "Expenses",

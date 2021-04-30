@@ -148,7 +148,7 @@ export default {
         });
     },
   },
-  mounted() {
+  created() {
     this.initializeClients();
     this.initializeExpenses();
   },

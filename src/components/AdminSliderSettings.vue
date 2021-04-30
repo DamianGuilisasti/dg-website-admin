@@ -2,38 +2,49 @@
   <!--   class="mx-auto"  -->
   <v-container>
     <h1>Sliders</h1>
+    {{ $data }}
     <v-row>
       <v-col cols="12">
-        <v-card
-          max-width="400"
-          v-for="slider in sliders"
-          :key="slider._id"
-          class="mb-5 mr-5 sliderCard"
+        <draggable
+          :sliders="sliders"
+          ghost-class="ghost"
+          :move="checkMove"
+          @start="dragging = true"
+          @end="dragging = false"
         >
-          <v-img
-            class="white--text align-end"
-            height="200px"
-            :src="slider.sliderImg.url"
+          <v-card
+            max-width="400"
+            v-for="slider in sliders"
+            :key="slider._id"
+            class="mb-5 mr-5 sliderCard"
+            draggable="true"
           >
-            <v-card-title>{{ slider.title }}</v-card-title>
-          </v-img>
+            <v-img
+              class="white--text align-end"
+              height="200px"
+              :src="slider.sliderImg.url"
+            >
+              <v-card-title>{{ slider.title }}</v-card-title>
+            </v-img>
 
-          <v-card-subtitle class="pb-0"> Subtítulo: </v-card-subtitle>
+            <v-card-subtitle class="pb-0"> Subtítulo: </v-card-subtitle>
 
-          <v-card-text class="text--primary">
-            <div>{{ slider.subtitle }}</div>
-          </v-card-text>
+            <v-card-text class="text--primary">
+              <div>{{ slider.subtitle }}</div>
+            </v-card-text>
 
-          <v-card-actions>
-            <v-btn color="green" text @click="editSlider(slider)">
-              Editar
-            </v-btn>
+            <v-card-actions>
+              <v-btn color="green" text @click="editSlider(slider)">
+                Editar
+              </v-btn>
 
-            <v-btn color="red" text @click="deleteSlider(slider)">
-              Eliminar
-            </v-btn>
-          </v-card-actions>
-        </v-card>
+              <v-btn color="red" text @click="deleteSlider(slider)">
+                Eliminar
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </draggable>
+
         <div class="addNew d-flex" @click="dialog = true">
           <v-row align="center">
             <v-col class="text-center">
@@ -42,6 +53,11 @@
             </v-col>
           </v-row>
         </div>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-btn v-if="dragging">Guardar nuevo orden</v-btn>
       </v-col>
     </v-row>
 
@@ -118,8 +134,16 @@
 
 <script>
 import axios from "axios";
+import draggable from "vuedraggable";
 export default {
+  name: "simple",
+  display: "Simple",
+  order: 0,
+  components: {
+    draggable,
+  },
   data: () => ({
+    dragging: false,
     newSliderImg: false,
     dialog: false,
     sliders: [],
@@ -137,6 +161,9 @@ export default {
     },
   }),
   methods: {
+    checkMove: function (e) {
+      console.log("Future index: " + e.draggedContext.futureIndex);
+    },
     deleteSliderImg() {
       this.editedItem.sliderImg = "";
       this.newSliderImg = true;

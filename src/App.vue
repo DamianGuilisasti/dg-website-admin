@@ -31,7 +31,7 @@ export default {
   computed: {
     ...mapState(["snackbar"]),
   },
-  mounted() {
+  created() {
     axios
       .get("settings/list")
       .then(function (response) {
