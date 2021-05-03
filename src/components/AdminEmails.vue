@@ -133,7 +133,6 @@ export default {
       });
     },
     getClients() {
-      console.log("asd");
       let me = this;
       axios
         .get("/clients/list")

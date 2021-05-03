@@ -3,17 +3,33 @@
   <v-container>
     <h1>Logos de Clientes</h1>
     <v-row>
-      <v-col cols="auto" v-for="logo in logos" :key="logo._id">
-        <v-img
-          :src="logo.logoImg.url"
-          class="logoImg"
-          height="200px"
-          width="200px"
-          ><span class="removeButton" @click="deleteClientLogo(logo)"
-            >X</span
-          ></v-img
+      <v-col>
+        <v-btn dark color="green" v-if="newOrder" @click="saveNewOrder"
+          >Guardar nuevo orden</v-btn
         >
       </v-col>
+    </v-row>
+    <v-row>
+      <draggable
+        style="display: inline-flex"
+        :list="logos"
+        ghost-class="ghost"
+        :move="checkMove"
+        @start="dragging = true"
+        @end="dragging = false"
+      >
+        <v-col cols="auto" v-for="logo in logos" :key="logo._id">
+          <v-img
+            :src="logo.logoImg.url"
+            class="logoImg"
+            height="200px"
+            width="200px"
+            ><span class="removeButton" @click="deleteClientLogo(logo)"
+              >X</span
+            ></v-img
+          >
+        </v-col>
+      </draggable>
       <v-col cols="auto">
         <div class="addNew d-flex" @click="dialog = true">
           <v-row align="center">
@@ -84,7 +100,11 @@
 
 <script>
 import axios from "axios";
+import draggable from "vuedraggable";
 export default {
+  components: {
+    draggable,
+  },
   data: () => ({
     newSliderImg: false,
     dialog: false,
@@ -101,8 +121,32 @@ export default {
       subtitle: "",
       sliderImg: "",
     },
+    newOrder: false,
   }),
+
   methods: {
+    checkMove: function (e) {
+      this.newOrder = true;
+    },
+    saveNewOrder() {
+      let me = this;
+      axios
+        .post("logos/updateIndex", { logos: this.logos })
+        .then(function (response) {
+          me.$store.dispatch("setSnackbar", {
+            text: "Se actualizó correctamente el orden de los Logos.",
+          });
+          me.getLogos();
+        })
+        .catch(function (error) {
+          console.log(error);
+          me.$store.dispatch("setSnackbar", {
+            text:
+              "Hubo un error al actualizar el orden de los Logos, por favor actualice la página e intente nuevamente.",
+            color: "error",
+          });
+        });
+    },
     deleteClientLogo(logo) {
       let me = this;
       let logoId = logo._id;

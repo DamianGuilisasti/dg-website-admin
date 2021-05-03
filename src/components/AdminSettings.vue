@@ -474,7 +474,6 @@ export default {
     },
     updateInfo() {
       let me = this;
-      console.log(this.aboutInfo)
       axios
         .put("settings/updateInfo", {
           _id: this.dataId,

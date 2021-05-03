@@ -2,11 +2,17 @@
   <!--   class="mx-auto"  -->
   <v-container>
     <h1>Sliders</h1>
-    {{ $data }}
+    <v-row>
+      <v-col>
+        <v-btn dark color="green" v-if="newOrder" @click="saveNewOrder"
+          >Guardar nuevo orden</v-btn
+        >
+      </v-col>
+    </v-row>
     <v-row>
       <v-col cols="12">
         <draggable
-          :sliders="sliders"
+          :list="sliders"
           ghost-class="ghost"
           :move="checkMove"
           @start="dragging = true"
@@ -53,11 +59,6 @@
             </v-col>
           </v-row>
         </div>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <v-btn v-if="dragging">Guardar nuevo orden</v-btn>
       </v-col>
     </v-row>
 
@@ -159,10 +160,30 @@ export default {
       subtitle: "",
       sliderImg: "",
     },
+    newOrder: false,
   }),
   methods: {
+    saveNewOrder() {
+      let me = this;
+      axios
+        .post("sliders/updateIndex", {sliders: this.sliders})
+        .then(function (response) {
+          me.$store.dispatch("setSnackbar", {
+            text: "Se actualizó correctamente el orden de los Sliders.",
+          });
+          me.getSliders();
+        })
+        .catch(function (error) {
+          console.log(error);
+          me.$store.dispatch("setSnackbar", {
+            text:
+              "Hubo un error al actualizar el orden de los sliders, por favor actualice la página e intente nuevamente.",
+            color: "error",
+          });
+        });
+    },
     checkMove: function (e) {
-      console.log("Future index: " + e.draggedContext.futureIndex);
+      this.newOrder = true;
     },
     deleteSliderImg() {
       this.editedItem.sliderImg = "";
@@ -179,7 +200,6 @@ export default {
         .get("sliders/list")
         .then(function (response) {
           me.sliders = response.data;
-          console.log(me.sliders);
         })
         .catch(function (error) {
           console.log(error);
