@@ -18,7 +18,12 @@
         @start="dragging = true"
         @end="dragging = false"
       >
-        <v-col cols="auto" v-for="logo in logos" :key="logo._id">
+        <v-col
+          class="moveCursor"
+          cols="auto"
+          v-for="logo in logos"
+          :key="logo._id"
+        >
           <v-img
             :src="logo.logoImg.url"
             class="logoImg"
@@ -262,5 +267,8 @@ export default {
 }
 .logoImg .v-image__image .v-image__image--cover :hover {
   opacity: 0.5;
+}
+.moveCursor:hover {
+  cursor: move;
 }
 </style>

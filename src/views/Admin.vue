@@ -228,11 +228,15 @@
         {{ new Date().getFullYear() }}</span
       >
     </v-footer>
+    <v-overlay v-if="loadingOverlay">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
   </v-app>
 </template>
 
 <script>
 import axios from "axios";
+import { mapState } from "vuex";
 export default {
   name: "AdminView",
   data: () => ({
@@ -240,6 +244,9 @@ export default {
     userInfo: { rol: [{ name: "" }] },
     initials: "",
   }),
+  computed: {
+    ...mapState(["loadingOverlay"]),
+  },
   methods: {
     getUserInfo() {
       let me = this;
@@ -285,5 +292,8 @@ export default {
 }
 .v-list-item--link:before {
   background-color: #0027ff;
+}
+.v-navigation-drawer--fixed {
+    z-index: 5;
 }
 </style>

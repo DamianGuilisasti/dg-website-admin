@@ -7,11 +7,18 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    loadingOverlay: false,
     snackbar: { showing: false, text: "", color: "" },
     token: null,
     userDB: null,
   },
   mutations: {
+    SET_LOADINGOVERLAY(state, loadingOverlay) {
+      state.loadingOverlay = loadingOverlay;
+    },
+    REMOVE_LOADINGOVERLAY(state, loadingOverlay) {
+      state.loadingOverlay = loadingOverlay;
+    },
     SET_SNACKBAR(state, snackbar) {
       state.snackbar = snackbar;
     },
@@ -27,6 +34,14 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    setLoadingOverlay({ commit }, loadingOverlay) {
+      loadingOverlay = true;
+      commit("SET_LOADINGOVERLAY", loadingOverlay);
+    },
+    removeLoadingOverlay({ commit }, loadingOverlay) {
+      loadingOverlay = false;
+      commit("REMOVE_LOADINGOVERLAY", loadingOverlay);
+    },
     setSnackbar({ commit }, snackbar) {
       snackbar.showing = true;
       snackbar.color = snackbar.color || "success";

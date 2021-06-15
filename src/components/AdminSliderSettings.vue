@@ -22,7 +22,7 @@
             max-width="400"
             v-for="slider in sliders"
             :key="slider._id"
-            class="mb-5 mr-5 sliderCard"
+            class="mb-5 mr-5 sliderCard moveCursor"
             draggable="true"
           >
             <v-img
@@ -166,7 +166,7 @@ export default {
     saveNewOrder() {
       let me = this;
       axios
-        .post("sliders/updateIndex", {sliders: this.sliders})
+        .post("sliders/updateIndex", { sliders: this.sliders })
         .then(function (response) {
           me.$store.dispatch("setSnackbar", {
             text: "Se actualizó correctamente el orden de los Sliders.",
@@ -352,5 +352,8 @@ export default {
   display: inline-block;
   float: left;
   height: 330px;
+}
+.moveCursor:hover {
+  cursor: move;
 }
 </style>

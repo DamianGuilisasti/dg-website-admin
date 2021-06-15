@@ -89,7 +89,7 @@
                 <v-col cols="12">
                   <v-file-input
                     :loading="loadingLogo"
-                    v-if="!companyImg.imageURL"
+                    v-if="!companyImg"
                     v-model="imageUploaded"
                     color="deep-purple accent-4"
                     label="Imagen de la empresa"
@@ -121,10 +121,7 @@
                   </v-file-input>
                 </v-col>
                 <v-col cols="12">
-                  <img
-                    height="200px"
-                    :src="companyImg.imageURL"
-                    v-if="companyImg.imageURL"
+                  <img height="200px" :src="companyImg" v-if="companyImg"
                 /></v-col>
               </v-row>
 
@@ -388,6 +385,7 @@ export default {
     axios
       .get("settings/list")
       .then(function (response) {
+        console.log(response.data);
         me.aboutInfo = response.data[0].aboutInfo;
         me.companyName = response.data[0].companyName;
         me.companyPhone = response.data[0].companyPhone;
@@ -403,7 +401,7 @@ export default {
         me.twitter = response.data[0].socialMedia.twitter;
         me.imageURL = response.data[0].logoURL.imageURL;
         me.dataId = response.data[0]._id;
-        me.companyImg = response.data[0].companyImg;
+        me.companyImg = response.data[0].companyImg.imageURL;
       })
       .catch(function (error) {
         console.log(error);
@@ -455,7 +453,7 @@ export default {
       axios
         .get("settings/list")
         .then(function (response) {
-          me.companyImg = response.data[0].companyImg;
+          me.companyImg = response.data[0].companyImg.imageURL;
         })
         .catch(function (error) {
           console.log(error);
@@ -588,6 +586,8 @@ export default {
       let me = this;
       let formData = new FormData();
 
+      console.log(this.imageFile)
+
       formData.append("_id", this.dataId);
       formData.append("image", this.imageFile);
 
@@ -640,7 +640,7 @@ export default {
   float: left;
 }
 
-.aboutCompany{
+.aboutCompany {
   color: rgb(0 0 0 / 60%);
 }
 </style>
