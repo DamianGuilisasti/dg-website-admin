@@ -230,7 +230,7 @@ export default {
             "Content-Type": "multipart/form-data",
           },
         })
-        .then(function (response) {
+        .then(function () {
           me.loadingLogo = false;
           me.$store.dispatch("setSnackbar", {
             text: "Se subió correctamente el slider.",

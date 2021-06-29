@@ -133,25 +133,34 @@
                             ></v-file-input>
                           </v-row>
                           <v-row>
-                            <div
-                              v-for="(image, index) in filesArray"
-                              :key="index"
-                              class="image-preview"
-                              id="imagePreview"
+                            <draggable
+                              :list="filesArray"
+                              ghost-class="ghost"
+                              :move="checkMove"
+                              @start="dragging = true"
+                              @end="dragging = false"
                             >
-                              <v-img
-                                :src="image"
-                                height="120px"
-                                width="auto"
-                                alt="Image Preview"
+                              <div
+                                v-for="(image, index) in filesArray"
+                                :key="index"
+                                class="image-preview"
+                                id="imagePreview"
+                                draggable="true"
                               >
-                                <span
-                                  class="removeButton"
-                                  @click="deleteImage(index)"
-                                  >X</span
-                                ></v-img
-                              >
-                            </div>
+                                <v-img
+                                  :src="image"
+                                  height="120px"
+                                  width="auto"
+                                  alt="Image Preview"
+                                >
+                                  <span
+                                    class="removeButton"
+                                    @click="deleteImage(index)"
+                                    >X</span
+                                  ></v-img
+                                >
+                              </div>
+                            </draggable>
                           </v-row>
                           <v-row v-if="editedItem.images">
                             <div
@@ -222,12 +231,15 @@
 
 <script>
 import axios from "axios";
+import draggable from "vuedraggable";
 import VueUploadMultipleImage from "vue-upload-multiple-image";
 export default {
   components: {
     VueUploadMultipleImage,
+    draggable,
   },
   data: () => ({
+    dragging: false,
     imagesFile: [],
     loadingLogo: null,
     eventFiles: [],
@@ -512,6 +524,11 @@ export default {
         .catch(function (error) {
           console.log(error);
         });
+    },
+    checkMove: function () {
+      //darle un index a FilesArray y modificar Images File según el index de FilesArray
+      
+      console.log(this.filesArray);
     },
   },
   watch: {
