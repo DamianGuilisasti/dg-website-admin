@@ -16,7 +16,13 @@ Vue.config.productionTip = false;
 Vue.use(CoolLightBox);
 Vue.use(VueScrollactive);
 
-axios.defaults.baseURL = "http://localhost:4000/api"; //cambiar en producción dejar solo el /api
+if (process.env.NODE_ENV == "development") {
+  axios.defaults.baseURL = "http://localhost:4000/api";
+} else {
+  axios.defaults.baseURL = "/api";
+}
+
+//axios.defaults.baseURL = "http://localhost:4000/api"; //cambiar en producción dejar solo el /api
 
 new Vue({
   router,
