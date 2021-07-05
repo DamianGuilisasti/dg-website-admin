@@ -647,10 +647,8 @@ export default {
     //Edit
 
     editItem(item) {
-      console.log(item);
       this.editedIndex = this.clients.indexOf(item);
       this.editedItem = Object.assign({}, item);
-      console.log(this.editedItem);
       this.dialog = true;
     },
 

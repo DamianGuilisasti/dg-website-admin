@@ -1,7 +1,8 @@
 <template>
   <v-app id="inspire">
     <v-main class="main">
-      <v-container class="fill-height container" fluid>
+      <v-container class="container" fluid>
+        <!-- fill-height -->
         <v-row align="center" class="no-gutters">
           <v-col
             cols="12"
@@ -85,7 +86,7 @@ export default {
         })
         .then(function (response) {
           me.$store.dispatch("setSnackbar", {
-            text: `Se actualizó correctamente la contraseña..`,
+            text: `Se actualizó correctamente la contraseña.`,
           });
         })
         .catch(function (error) {

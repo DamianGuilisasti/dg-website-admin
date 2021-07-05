@@ -1,7 +1,8 @@
 <template>
   <v-app id="inspire">
     <v-main class="main">
-      <v-container class="fill-height container" fluid>
+      <v-container class="container" fluid>
+        <!-- fill-height -->
         <v-row align="center" class="no-gutters">
           <v-col lg="7" class="d-flex justify-center align-center col-left">
             <div>
@@ -70,7 +71,7 @@
                       class="btn-forget"
                       small
                       text
-                      @click="forgotPassword"
+                      @click="showLoginForm = false"
                       >Olvidé la contraseña</v-btn
                     ></v-col
                   >
@@ -98,7 +99,7 @@
                 <v-row>
                   <v-col cols="12" lg="6" md="6">
                     <v-btn
-                      @click="resetPassword"
+                      @click="forgotPassword"
                       class="btn-login"
                       elevation="2"
                       small
@@ -140,9 +141,6 @@ export default {
   }),
   methods: {
     forgotPassword() {
-      this.showLoginForm = false;
-    },
-    resetPassword() {
       let me = this;
       axios
         .post("/user/forgotpassword", { email: this.resetEmail })
@@ -159,9 +157,6 @@ export default {
             });
           }
         });
-
-      //Comunicarme con el backend mediante axios, procesar el reset del password, enviar un email con un link y luego devolver un token con un tiempo para que se pueda
-      //cargar la nueva contraseña.
     },
     login() {
       let me = this;

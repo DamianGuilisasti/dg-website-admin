@@ -19,7 +19,6 @@
           @end="dragging = false"
         >
           <v-card
-            max-width="400"
             v-for="slider in sliders"
             :key="slider._id"
             class="mb-5 mr-5 sliderCard moveCursor"
@@ -51,7 +50,7 @@
           </v-card>
         </draggable>
 
-        <div class="addNew d-flex" @click="dialog = true">
+        <div class="addNew" @click="dialog = true">
           <v-row align="center">
             <v-col class="text-center">
               <v-icon size="40">mdi-plus</v-icon>
@@ -176,8 +175,7 @@ export default {
         .catch(function (error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text:
-              "Hubo un error al actualizar el orden de los sliders, por favor actualice la página e intente nuevamente.",
+            text: "Hubo un error al actualizar el orden de los sliders, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -241,8 +239,7 @@ export default {
         .catch(function (error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text:
-              "Hubo un error al subir el slider, por favor actualice la página e intente nuevamente.",
+            text: "Hubo un error al subir el slider, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -279,8 +276,7 @@ export default {
         .catch(function (error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text:
-              "Hubo un error al actualizar el slider, por favor actualice la página e intente nuevamente.",
+            text: "Hubo un error al actualizar el slider, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -342,7 +338,8 @@ export default {
 <style scoped lang="scss">
 .addNew {
   border-style: dashed !important;
-  width: 400px;
+  //width: 400px;
+  width: 100%;
   height: 330px;
   cursor: pointer;
   display: inline-flex !important;
@@ -351,9 +348,16 @@ export default {
 .sliderCard {
   display: inline-block;
   float: left;
-  height: 330px;
+  height: auto;
+  width: 100%;
 }
 .moveCursor:hover {
   cursor: move;
 }
+@media only screen and (min-width: 1260px) {
+  .sliderCard,
+  .addNew {
+    width: 28%;
+  }
+} // Extra large devices
 </style>

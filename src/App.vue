@@ -27,46 +27,50 @@ export default {
   data: () => ({
     fab: false,
   }),
-  methods: {},
+  methods: {
+    getSettings() {
+      axios
+        .get("settings/list")
+        .then(function (response) {
+          if (response.data.length == 0) {
+            axios
+              .post("settings/add", {
+                aboutInfo: "",
+                companyName: "",
+                companyPhone: "",
+                socialMedia: {
+                  facebook: "",
+                  instagram: "",
+                  twitter: "",
+                  google: "",
+                  youtube: "",
+                  linkedin: "",
+                },
+                logoURL: {
+                  public_id: "",
+                  imageURL: "",
+                },
+                whatsapp: {
+                  phone: "",
+                  text: "",
+                },
+              })
+              .then(function (response) {})
+              .catch(function (error) {
+                console.log(error);
+              });
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+  },
   computed: {
     ...mapState(["snackbar"]),
   },
   created() {
-    axios
-      .get("settings/list")
-      .then(function (response) {
-        if (response.data.length == 0) {
-          axios
-            .post("settings/add", {
-              aboutInfo: "",
-              companyName: "",
-              companyPhone: "",
-              socialMedia: {
-                facebook: "",
-                instagram: "",
-                twitter: "",
-                google: "",
-                youtube: "",
-                linkedin: "",
-              },
-              logoURL: {
-                public_id: "",
-                imageURL: "",
-              },
-              whatsapp: {
-                phone: "",
-                text: "",
-              },
-            })
-            .then(function (response) {})
-            .catch(function (error) {
-              console.log(error);
-            });
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+    this.getSettings();
   },
 };
 </script>

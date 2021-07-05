@@ -381,33 +381,35 @@ export default {
     loadingLogo: false,
   }),
   created() {
-    let me = this;
-    axios
-      .get("settings/list")
-      .then(function (response) {
-        console.log(response.data);
-        me.aboutInfo = response.data[0].aboutInfo;
-        me.companyName = response.data[0].companyName;
-        me.companyPhone = response.data[0].companyPhone;
-        me.companyEmail = response.data[0].companyEmail;
-        me.companyAddress = response.data[0].companyAddress;
-        me.phone = response.data[0].whatsapp.phone;
-        me.text = response.data[0].whatsapp.text;
-        me.facebook = response.data[0].socialMedia.facebook;
-        me.instagram = response.data[0].socialMedia.instagram;
-        me.google = response.data[0].socialMedia.google;
-        me.linkedin = response.data[0].socialMedia.linkedin;
-        me.youtube = response.data[0].socialMedia.youtube;
-        me.twitter = response.data[0].socialMedia.twitter;
-        me.imageURL = response.data[0].logoURL.imageURL;
-        me.dataId = response.data[0]._id;
-        me.companyImg = response.data[0].companyImg.imageURL;
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+    this.getSettings();
   },
   methods: {
+    getSettings() {
+      let me = this;
+      axios
+        .get("settings/list")
+        .then(function (response) {
+          me.aboutInfo = response.data[0].aboutInfo;
+          me.companyName = response.data[0].companyName;
+          me.companyPhone = response.data[0].companyPhone;
+          me.companyEmail = response.data[0].companyEmail;
+          me.companyAddress = response.data[0].companyAddress;
+          me.phone = response.data[0].whatsapp.phone;
+          me.text = response.data[0].whatsapp.text;
+          me.facebook = response.data[0].socialMedia.facebook;
+          me.instagram = response.data[0].socialMedia.instagram;
+          me.google = response.data[0].socialMedia.google;
+          me.linkedin = response.data[0].socialMedia.linkedin;
+          me.youtube = response.data[0].socialMedia.youtube;
+          me.twitter = response.data[0].socialMedia.twitter;
+          me.imageURL = response.data[0].logoURL.imageURL;
+          me.dataId = response.data[0]._id;
+          me.companyImg = response.data[0].companyImg.imageURL;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
     deleteCompanyImg() {
       let me = this;
       axios
@@ -422,8 +424,7 @@ export default {
         .catch(function (error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text:
-              "Hubo un error al eliminar la imagen, por favor actualice la página e intente nuevamente.",
+            text: "Hubo un error al eliminar la imagen, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -442,8 +443,7 @@ export default {
         .catch(function (error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text:
-              "Hubo un error al eliminar el logo, por favor actualice la página e intente nuevamente.",
+            text: "Hubo un error al eliminar el logo, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -489,8 +489,7 @@ export default {
         .catch(function (error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text:
-              "Hubo un error al actualizar la información, por favor actualice la página e intente nuevamente.",
+            text: "Hubo un error al actualizar la información, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -515,8 +514,7 @@ export default {
         .catch(function (error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text:
-              "Hubo un error al actualizar las redes sociales, por favor actualice la página e intente nuevamente.",
+            text: "Hubo un error al actualizar las redes sociales, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -537,8 +535,7 @@ export default {
         .catch(function (error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text:
-              "Hubo un error al actualizar la información de Whatsapp, por favor actualice la página e intente nuevamente.",
+            text: "Hubo un error al actualizar la información de Whatsapp, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -571,8 +568,7 @@ export default {
         .catch(function (error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text:
-              "Hubo un error al actualizar el logo, por favor actualice la página e intente nuevamente.",
+            text: "Hubo un error al actualizar el logo, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -585,8 +581,6 @@ export default {
       this.loadingLogo = true;
       let me = this;
       let formData = new FormData();
-
-      console.log(this.imageFile)
 
       formData.append("_id", this.dataId);
       formData.append("image", this.imageFile);
@@ -607,8 +601,7 @@ export default {
         .catch(function (error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text:
-              "Hubo un error al actualizar el logo, por favor actualice la página e intente nuevamente.",
+            text: "Hubo un error al actualizar el logo, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });

@@ -5,9 +5,9 @@
         <v-list-item>
           <v-list-item-content>
             <v-list-item-title class="title">
-              Damián Guilisasti
+              {{ companyName }}
             </v-list-item-title>
-            <v-list-item-subtitle> v1.0 </v-list-item-subtitle>
+            <v-list-item-subtitle> Admin Panel </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
 
@@ -159,7 +159,7 @@
 
         <v-divider></v-divider>
 
-        <v-list-item href="https://damianguilisasti.com.ar">
+        <v-list-item :href="website">
           <v-list-item-action>
             <v-icon>mdi-play</v-icon>
           </v-list-item-action>
@@ -224,12 +224,19 @@
     </v-main>
     <v-footer app>
       <span
-        >Powered by Damián Guilisasti &copy;
-        {{ new Date().getFullYear() }}</span
+        >Powered by
+        <a target="_blank" href="https://damianguilisasti.com.ar"
+          >Damián Guilisasti</a
+        >
+        &copy; {{ new Date().getFullYear() }}</span
       >
     </v-footer>
     <v-overlay v-if="loadingOverlay">
-      <v-progress-circular indeterminate size="64"></v-progress-circular>
+      <v-progress-circular
+        color="#fff"
+        indeterminate
+        size="100"
+      ></v-progress-circular>
     </v-overlay>
   </v-app>
 </template>
@@ -243,11 +250,32 @@ export default {
     drawer: null,
     userInfo: { rol: [{ name: "" }] },
     initials: "",
+    companyName: "",
   }),
   computed: {
+    website() {
+      return (
+        window.location.hostname.split(".")[1] +
+        "." +
+        window.location.hostname.split(".")[2] +
+        "." +
+        window.location.hostname.split(".")[3]
+      );
+    },
     ...mapState(["loadingOverlay"]),
   },
   methods: {
+    getSettings() {
+      let me = this;
+      axios
+        .get("settings/list")
+        .then(function (response) {
+          me.companyName = response.data[0].companyName;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
     getUserInfo() {
       let me = this;
       let header = { token: this.$store.state.token };
@@ -276,6 +304,7 @@ export default {
   created() {
     this.$store.dispatch("autoLogin");
     this.getUserInfo();
+    this.getSettings();
 
     //this.getTheme();
   },
@@ -294,6 +323,6 @@ export default {
   background-color: #0027ff;
 }
 .v-navigation-drawer--fixed {
-    z-index: 5;
+  z-index: 5;
 }
 </style>

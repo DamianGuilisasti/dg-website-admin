@@ -7,7 +7,9 @@
         :items="posts"
         :search="search"
         :loading="loadingData"
-        ><!-- loading-text="Loading... Please wait" -->
+        loading-text="Cargando publicaciones... Por favor espere."
+        no-data-text="No hay información de publicaciones, por favor cargue nuevas publicaciones."
+      >
         <template v-slot:top>
           <v-toolbar flat color="dark">
             <v-card-title>

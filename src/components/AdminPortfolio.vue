@@ -351,8 +351,6 @@ export default {
     deleteImage(index) {
       this.filesArray.splice(index, 1);
       this.imagesFile.splice(index, 1);
-      console.log("filesArray" + this.filesArray);
-      console.log("imagesFile" + this.imagesFile);
     },
 
     deleteSavedImages(index) {
@@ -435,6 +433,7 @@ export default {
           })
           .catch(function (error) {
             console.log(error);
+            me.$store.dispatch("removeLoadingOverlay");
             me.$store.dispatch("setSnackbar", {
               text: "Hubo un error al actualizar el Portfolio, por favor actualice la página e intente nuevamente.",
               color: "error",
@@ -477,6 +476,7 @@ export default {
           })
           .catch(function (error) {
             console.log(error);
+            me.$store.dispatch("removeLoadingOverlay");
             me.$store.dispatch("setSnackbar", {
               text: "Hubo un error al subir el Portfolio, por favor actualice la página e intente nuevamente.",
               color: "error",
@@ -527,8 +527,7 @@ export default {
     },
     checkMove: function () {
       //darle un index a FilesArray y modificar Images File según el index de FilesArray
-      
-      console.log(this.filesArray);
+    
     },
   },
   watch: {
@@ -569,7 +568,6 @@ export default {
         URL.createObjectURL(file)
       );
       this.editedItem.images = this.editedItem.images.concat(updatedArray);
-      console.log(this.editedItem.images);
 
       this.eventFiles = { ...this.newEventFiles };
     },

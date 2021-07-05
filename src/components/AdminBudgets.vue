@@ -662,7 +662,6 @@ export default {
     clientAdded(event) {
       let me = this;
       let id = event;
-      //cuando se haga el post, se pone el id del cliente seleccionado.
     },
     servicesAdded(event) {
       let me = this;
@@ -687,7 +686,6 @@ export default {
       let me = this;
       let id = event;
       this.servicesList.map(function (i) {
-        console.log(i);
         if (id == i.value) {
           const repeated = me.editedItem.services.findIndex(
             (x) => x.text == i.text
@@ -740,6 +738,8 @@ export default {
         formData.append("email", me.BudgetInfo.client.email);
         formData.append("name", me.BudgetInfo.client.name);
 
+        me.$store.dispatch("setLoadingOverlay");
+
         axios
           .post("budgets/uploadPDF", formData, {
             headers: {
@@ -748,12 +748,14 @@ export default {
             },
           })
           .then(function (response) {
+            me.$store.dispatch("removeLoadingOverlay");
             me.$store.dispatch("setSnackbar", {
               text: "Se envío correctamente el presupuesto.",
             });
           })
           .catch(function (error) {
             console.log(error);
+            me.$store.dispatch("removeLoadingOverlay");
             me.$store.dispatch("setSnackbar", {
               text:
                 "Hubo un error al enviar el presupuesto, por favor actualice la página e intente nuevamente.",
@@ -765,6 +767,8 @@ export default {
       this.Budgetdialog = false;
     },
     createPDF() {
+      let me = this;
+      me.$store.dispatch("setLoadingOverlay");
       const template = document.getElementById("budgetTemplate");
 
       html2canvas(template, {
@@ -777,7 +781,7 @@ export default {
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         let heightLeft = imgHeight;
 
-        const doc = new jsPDF("p", "mm", "a4");
+        const doc = new jsPDF("p", "mm", "a4", true);
         const position = 0;
 
         doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
@@ -789,7 +793,7 @@ export default {
           doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
           heightLeft -= pageHeight;
         }
-
+        me.$store.dispatch("removeLoadingOverlay");
         doc.save("Presupuesto.pdf");
       });
       this.Budgetdialog = false;

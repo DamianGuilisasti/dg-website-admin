@@ -155,6 +155,8 @@ export default {
       formData.append("name", this.selectedClient.name);
       formData.append("subject", this.subject);
 
+      me.$store.dispatch("setLoadingOverlay");
+
       axios
         .post("budgets/uploadBillPDF", formData, {
           headers: {
@@ -164,15 +166,16 @@ export default {
         })
         .then(function (response) {
           me.clear();
+          me.$store.dispatch("removeLoadingOverlay");
           me.$store.dispatch("setSnackbar", {
             text: "Se envío correctamente la factura.",
           });
         })
         .catch(function (error) {
           console.log(error);
+          me.$store.dispatch("removeLoadingOverlay");
           me.$store.dispatch("setSnackbar", {
-            text:
-              "Hubo un error al enviar el presupuesto, por favor actualice la página e intente nuevamente.",
+            text: "Hubo un error al enviar el presupuesto, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
