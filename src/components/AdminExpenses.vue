@@ -139,11 +139,17 @@ export default {
 
     desactivateItem(item) {
       let me = this;
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       axios
-        .put("expenses/desactivate", {
-          _id: item._id,
-        })
-        .then(function (response) {
+        .put(
+          "expenses/desactivate",
+          {
+            _id: item._id,
+          },
+          configuration
+        )
+        .then(function () {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
             text: `Se desactivó correctamente el gasto.`,
@@ -156,11 +162,17 @@ export default {
 
     activateItem(item) {
       let me = this;
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       axios
-        .put("expenses/activate", {
-          _id: item._id,
-        })
-        .then(function (response) {
+        .put(
+          "expenses/activate",
+          {
+            _id: item._id,
+          },
+          configuration
+        )
+        .then(function () {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
             text: `Se activó correctamente el gasto.`,
@@ -179,12 +191,18 @@ export default {
 
     deleteItem(item) {
       let me = this;
-      let serviceId = item._id;
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
+      let expensesId = item._id;
       confirm("Estás a punto de eliminar el gasto ¿Continuar?") &&
         axios
-          .delete("expenses/delete", {
-            params: { id: serviceId },
-          })
+          .delete(
+            "expenses/delete",
+            {
+              params: { id: expensesId },
+            },
+            configuration
+          )
           .then(function (response) {
             me.initialize();
             me.$store.dispatch("setSnackbar", {
@@ -206,14 +224,20 @@ export default {
 
     save() {
       let me = this;
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       if (this.editedIndex > -1) {
         axios
-          .put("expenses/update", {
-            _id: this.editedItem._id,
-            name: this.editedItem.name,
-            price: this.editedItem.price,
-          })
-          .then(function (response) {
+          .put(
+            "expenses/update",
+            {
+              _id: this.editedItem._id,
+              name: this.editedItem.name,
+              price: this.editedItem.price,
+            },
+            configuration
+          )
+          .then(function () {
             me.initialize();
             me.$store.dispatch("setSnackbar", {
               text: `Se actualizó correctamente el gasto.`,
@@ -224,12 +248,17 @@ export default {
           });
       } else {
         let me = this;
-
+        let header = { token: this.$store.state.token };
+        let configuration = { headers: header };
         axios
-          .post("expenses/add", {
-            name: this.editedItem.name,
-            price: this.editedItem.price,
-          })
+          .post(
+            "expenses/add",
+            {
+              name: this.editedItem.name,
+              price: this.editedItem.price,
+            },
+            configuration
+          )
           .then(function (response) {
             me.initialize();
             me.$store.dispatch("setSnackbar", {
@@ -244,8 +273,10 @@ export default {
     },
     initialize() {
       let me = this;
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       axios
-        .get("expenses/list")
+        .get("expenses/list", configuration)
         .then(function (response) {
           me.expenses = response.data;
           me.loadingData = false;

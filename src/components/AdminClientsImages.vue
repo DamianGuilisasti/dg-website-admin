@@ -135,8 +135,10 @@ export default {
     },
     saveNewOrder() {
       let me = this;
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       axios
-        .post("logos/updateIndex", { logos: this.logos })
+        .post("logos/updateIndex", { logos: this.logos }, configuration)
         .then(function (response) {
           me.$store.dispatch("setSnackbar", {
             text: "Se actualizó correctamente el orden de los Logos.",
@@ -146,8 +148,7 @@ export default {
         .catch(function (error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text:
-              "Hubo un error al actualizar el orden de los Logos, por favor actualice la página e intente nuevamente.",
+            text: "Hubo un error al actualizar el orden de los Logos, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -202,6 +203,7 @@ export default {
         .post("logos/add", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+            token: me.$store.state.token,
           },
         })
         .then(function (response) {
@@ -215,8 +217,7 @@ export default {
         .catch(function (error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text:
-              "Hubo un error al subir el logo, por favor actualice la página e intente nuevamente.",
+            text: "Hubo un error al subir el logo, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });

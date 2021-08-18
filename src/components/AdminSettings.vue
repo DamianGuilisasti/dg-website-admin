@@ -414,7 +414,7 @@ export default {
       let me = this;
       axios
         .put("settings/deleteCompanyImg", { _id: this.dataId })
-        .then(function (response) {
+        .then(function () {
           me.imageUploaded = null;
           me.updateNewCompanyImg();
           me.$store.dispatch("setSnackbar", {

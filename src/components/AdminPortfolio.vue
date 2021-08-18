@@ -84,104 +84,120 @@
                       <v-row>
                         <v-col cols="12">
                           <v-row>
-                            <p class="mb-3">Imágenes: (Máximo 10)</p>
-                          </v-row>
-                          <v-row v-if="editedIndex == -1">
-                            <div class="addNew d-flex" @click="inputClick">
-                              <v-row align="center">
-                                <v-col class="text-center">
-                                  <v-icon size="40">mdi-plus</v-icon>
-                                  <p>Agregar imagen</p>
-                                </v-col>
-                              </v-row>
-                            </div>
-                            <v-file-input
-                              multiple
-                              outlined
-                              dense
-                              :loading="loadingLogo"
-                              v-model="imageUploaded"
-                              color="deep-purple accent-4"
-                              placeholder="Seleccionar imágenes"
-                              prepend-icon="mdi-paperclip"
-                              persistent-hint
-                              class="mb-3 inpFile"
-                              name="images"
-                            ></v-file-input>
-                          </v-row>
-                          <v-row v-if="editedIndex != -1">
-                            <div class="addNew d-flex" @click="inputClick">
-                              <v-row align="center">
-                                <v-col class="text-center">
-                                  <v-icon size="40">mdi-plus</v-icon>
-                                  <p>Agregar imagen</p>
-                                </v-col>
-                              </v-row>
-                            </div>
-                            <v-file-input
-                              multiple
-                              outlined
-                              dense
-                              :loading="loadingLogo"
-                              v-model="savedImageUploaded"
-                              color="deep-purple accent-4"
-                              placeholder="Seleccionar imágenes"
-                              prepend-icon="mdi-paperclip"
-                              persistent-hint
-                              class="mb-3 inpFile"
-                              name="images"
-                            ></v-file-input>
+                            <v-col cols="12">
+                              <p class="mb-3">Imágenes: (Máximo 10)</p>
+                            </v-col>
                           </v-row>
                           <v-row>
-                            <draggable
-                              :list="filesArray"
-                              ghost-class="ghost"
-                              :move="checkMove"
-                              @start="dragging = true"
-                              @end="dragging = false"
-                            >
-                              <div
-                                v-for="(image, index) in filesArray"
-                                :key="index"
-                                class="image-preview"
-                                id="imagePreview"
-                                draggable="true"
-                              >
-                                <v-img
-                                  :src="image"
-                                  height="120px"
-                                  width="auto"
-                                  alt="Image Preview"
-                                >
-                                  <span
-                                    class="removeButton"
-                                    @click="deleteImage(index)"
-                                    >X</span
-                                  ></v-img
-                                >
+                            <v-col cols="12">
+                              <div class="addNew d-flex" @click="inputClick">
+                                <v-row align="center">
+                                  <v-col class="text-center">
+                                    <v-icon size="40">mdi-plus</v-icon>
+                                    <p>Agregar imagen</p>
+                                  </v-col>
+                                </v-row>
                               </div>
-                            </draggable>
-                          </v-row>
-                          <v-row v-if="editedItem.images">
-                            <div
-                              v-for="(image, index) in editedItem.images"
-                              :key="index"
-                              class="image-preview"
-                              id="imagePreview"
-                            >
-                              <v-img
-                                :src="image.url"
-                                height="120px"
-                                width="auto"
-                                alt="Image Preview"
+                              <v-file-input
+                                v-if="editedIndex == -1"
+                                multiple
+                                outlined
+                                dense
+                                v-model="imageUploaded"
+                                color="deep-purple accent-4"
+                                placeholder="Seleccionar imágenes"
+                                prepend-icon="mdi-paperclip"
+                                persistent-hint
+                                class="mb-3 inpFile"
+                                name="images"
+                              ></v-file-input>
+                              <v-file-input
+                                v-if="editedIndex != -1"
+                                multiple
+                                outlined
+                                dense
+                                v-model="imageEditedUploaded"
+                                color="deep-purple accent-4"
+                                placeholder="Seleccionar imágenes"
+                                prepend-icon="mdi-paperclip"
+                                persistent-hint
+                                class="mb-3 inpFile"
+                                name="images"
+                              ></v-file-input>
+                            </v-col>
+                            <v-col v-if="uploadedImages.length >= 1">
+                              <draggable
+                                :list="uploadedImages"
+                                ghost-class="ghost"
+                                @start="dragging = true"
+                                @end="dragging = false"
                               >
-                                <span
-                                  class="removeButton"
-                                  @click="deleteSavedImages(index)"
-                                  >X</span
-                                ></v-img
+                                <div
+                                  v-for="(image, index) in uploadedImages"
+                                  :key="index"
+                                  class="image-preview"
+                                  id="imagePreview"
+                                >
+                                  <v-img
+                                    :src="image.url"
+                                    height="120px"
+                                    width="auto"
+                                    alt="Image Preview"
+                                  >
+                                    <span
+                                      class="removeButton"
+                                      @click="deleteSavedImages(index)"
+                                      >X</span
+                                    ></v-img
+                                  >
+                                </div>
+                                <v-skeleton-loader
+                                  v-if="uploadingImages"
+                                  class="skeleton"
+                                  width="200"
+                                  height="120"
+                                  type="image"
+                                ></v-skeleton-loader>
+                              </draggable>
+                            </v-col>
+
+                            <v-col v-if="editedItem.portfolioimages">
+                              <draggable
+                                :list="editedItem.portfolioimages"
+                                ghost-class="ghost"
+                                @start="dragging = true"
+                                @end="dragging = false"
                               >
-                            </div>
+                                <div
+                                  v-for="(
+                                    image, index
+                                  ) in editedItem.portfolioimages"
+                                  :key="index"
+                                  class="image-preview"
+                                  id="imagePreview"
+                                >
+                                  <v-img
+                                    :src="image.url"
+                                    height="120px"
+                                    width="auto"
+                                    alt="Image Preview"
+                                  >
+                                    <span
+                                      class="removeButton"
+                                      @click="deletePortfolioImages(index)"
+                                      >X</span
+                                    ></v-img
+                                  >
+                                </div>
+                                <v-skeleton-loader
+                                  v-if="uploadingEditedArrayImages"
+                                  class="skeleton"
+                                  width="200"
+                                  height="120"
+                                  type="image"
+                                ></v-skeleton-loader>
+                              </draggable>
+                            </v-col>
                           </v-row>
                         </v-col>
                       </v-row>
@@ -234,19 +250,26 @@ import axios from "axios";
 import draggable from "vuedraggable";
 import VueUploadMultipleImage from "vue-upload-multiple-image";
 export default {
+  inject: {
+    theme: {
+      default: { isDark: false },
+    },
+  },
   components: {
     VueUploadMultipleImage,
     draggable,
   },
   data: () => ({
+    imageEditedUploaded: [],
+    deletedImagesPublicID: [],
+    uploadedImages: [],
+    portfolios: [],
+    clients: [],
+    portfolioImages: "",
+    uploadingImages: false,
+    uploadingEditedArrayImages: false,
     dragging: false,
-    imagesFile: [],
-    loadingLogo: null,
-    eventFiles: [],
-    filesArray: [],
-    images: [],
     imageUploaded: null,
-    savedImageUploaded: null,
     loadingData: true,
     dialog: false,
     editedIndex: -1,
@@ -258,7 +281,7 @@ export default {
       client: "",
       clientReview: "",
       description: "",
-      images: [],
+      portfolioimages: [],
       problem: "",
       solution: "",
     },
@@ -278,8 +301,6 @@ export default {
       { text: "Estado", filterable: true, value: "state" },
       { text: "Acciones", value: "actions" },
     ],
-    portfolios: [],
-    clients: [],
   }),
   methods: {
     inputClick() {
@@ -314,7 +335,7 @@ export default {
           },
           configuration
         )
-        .then(function (response) {
+        .then(function () {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
             text: `Se desactivó correctamente el portfolio.`,
@@ -337,7 +358,7 @@ export default {
           },
           configuration
         )
-        .then(function (response) {
+        .then(function () {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
             text: `Se activó correctamente el portfolio.`,
@@ -348,17 +369,26 @@ export default {
         });
     },
 
-    deleteImage(index) {
-      this.filesArray.splice(index, 1);
-      this.imagesFile.splice(index, 1);
-    },
-
     deleteSavedImages(index) {
-      this.editedItem.images.splice(index, 1);
+      let me = this;
+      this.uploadedImages.map(function (i) {
+        if (i.index == index) {
+          me.deletedImagesPublicID.push(i.public_id);
+        }
+      });
+      this.uploadedImages.splice(index, 1);
+    },
+    deletePortfolioImages(index) {
+      let me = this;
+      this.editedItem.portfolioimages.map(function (i) {
+        if (i.index == index) {
+          me.deletedImagesPublicID.push(i.public_id);
+        }
+      });
+      this.editedItem.portfolioimages.splice(index, 1);
     },
 
     editItem(item) {
-      console.log(item);
       this.editedIndex = this.portfolios.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
@@ -387,6 +417,7 @@ export default {
     },
 
     close() {
+      this.initialize();
       this.dialog = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
@@ -400,27 +431,36 @@ export default {
       let configuration = { headers: header };
 
       if (this.editedIndex > -1) {
-        let formData = new FormData();
+        const uploadedImagesOrdered = [];
 
-        formData.append("_id", this.editedItem._id);
-        formData.append("client", this.editedItem.client._id);
-        formData.append("description", this.editedItem.description);
-        formData.append("problem", this.editedItem.problem);
-        formData.append("solution", this.editedItem.solution);
-        formData.append("proyectType", this.editedItem.proyectType);
-        formData.append("proyectLink", this.editedItem.proyectLink);
-        formData.append("clientReview", this.editedItem.clientReview);
+        me.$store.dispatch("setLoadingOverlay");
+
+        if (me.editedItem.portfolioimages.length >= 1) {
+          me.editedItem.portfolioimages.map(function (i, index) {
+            uploadedImagesOrdered.push({
+              public_id: i.public_id,
+              url: i.url,
+              index,
+            });
+          });
+        }
 
         me.$store.dispatch("setLoadingOverlay");
 
         axios
           .put(
             "portfolio/update",
-            formData,
             {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
+              _id: this.editedItem._id,
+              client: this.editedItem.client._id,
+              description: this.editedItem.description || "",
+              problem: this.editedItem.problem || "",
+              solution: this.editedItem.solution || "",
+              proyectType: this.editedItem.proyectType || "",
+              proyectLink: this.editedItem.proyectLink || "",
+              clientReview: this.editedItem.clientReview || "",
+              portfolioimages: JSON.stringify(uploadedImagesOrdered) || "",
+              deletedImagesPublicID: this.deletedImagesPublicID || "",
             },
             configuration
           )
@@ -440,63 +480,65 @@ export default {
             });
           });
       } else {
-        this.loadingLogo = true;
-        let me = this;
-        let formData = new FormData();
-
-        formData.append("client", this.editedItem.client._id);
-        formData.append("description", this.editedItem.description || "");
-        formData.append("problem", this.editedItem.problem || "");
-        formData.append("solution", this.editedItem.solution || "");
-        formData.append("proyectType", this.editedItem.proyectType || "");
-        formData.append("proyectLink", this.editedItem.proyectLink || "");
-        formData.append("clientReview", this.editedItem.clientReview || "");
-
-        if (this.imagesFile) {
-          this.imagesFile.map(function (file) {
-            formData.append("images", file);
-          });
-        }
+        const uploadedImagesOrdered = [];
 
         me.$store.dispatch("setLoadingOverlay");
 
+        if (me.uploadedImages.length >= 1) {
+          me.uploadedImages.map(function (i, index) {
+            uploadedImagesOrdered.push({
+              public_id: i.public_id,
+              url: i.url,
+              index,
+            });
+          });
+        }
+
         axios
-          .post("portfolio/add", formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
+          .post(
+            "portfolio/add",
+            {
+              client: this.editedItem.client._id,
+              description: this.editedItem.description || "",
+              problem: this.editedItem.problem || "",
+              solution: this.editedItem.solution || "",
+              proyectType: this.editedItem.proyectType || "",
+              proyectLink: this.editedItem.proyectLink || "",
+              clientReview: this.editedItem.clientReview || "",
+              portfolioimages: JSON.stringify(uploadedImagesOrdered) || "",
+              deletedImagesPublicID: this.deletedImagesPublicID || "",
             },
-          })
-          .then(function (response) {
+            configuration
+          )
+          .then(function () {
             me.initialize();
             me.$store.dispatch("removeLoadingOverlay");
             me.$store.dispatch("setSnackbar", {
-              text: "Se subió correctamente el Portfolio.",
+              text: "Se agregó correctamente el Portfolio.",
             });
-            me.cleanForm();
           })
           .catch(function (error) {
             console.log(error);
             me.$store.dispatch("removeLoadingOverlay");
             me.$store.dispatch("setSnackbar", {
-              text: "Hubo un error al subir el Portfolio, por favor actualice la página e intente nuevamente.",
+              text: "Hubo un error al agregar el Portfolio, por favor actualice la página e intente nuevamente.",
               color: "error",
             });
           });
       }
+      this.cleanForm();
       this.close();
     },
     cleanForm() {
-      (this.editedItem.client = ""), (this.editedItem.description = "");
+      this.editedItem.client = "";
+      this.editedItem.description = "";
       this.editedItem.problem = "";
       this.editedItem.solution = "";
       this.editedItem.proyectType = "";
       this.editedItem.proyectLink = "";
       this.editedItem.clientReview = "";
-      (this.imagesFile = ""),
-        (this.eventFiles = ""),
-        (this.filesArray = ""),
-        (this.updatedArray = ""),
-        (this.newEventFiles = " ");
+      this.uploadedImages = "";
+      this.deletedImagesPublicID = [];
     },
     initialize() {
       let me = this;
@@ -525,51 +567,62 @@ export default {
           console.log(error);
         });
     },
-    checkMove: function () {
-      //darle un index a FilesArray y modificar Images File según el index de FilesArray
-    
-    },
   },
   watch: {
-    imageUploaded: function () {
-      if (this.filesArray.length > 0 && this.eventFiles) {
-        this.newEventFiles = event.target.files;
+    imageEditedUploaded: function () {
+      let me = this;
 
-        this.imagesFile = Array.from(this.imagesFile).concat(
-          Array.from(this.newEventFiles)
-        );
+      let formData = new FormData();
+      this.portfolioImages = Array.from(event.target.files);
+      this.portfolioImages.map(function (file) {
+        formData.append("images", file);
+      });
 
-        const updatedArray = Array.from(this.newEventFiles).map((file) =>
-          URL.createObjectURL(file)
-        );
-        this.filesArray = this.filesArray.concat(updatedArray);
+      me.uploadingEditedArrayImages = true;
 
-        this.eventFiles = { ...this.newEventFiles };
-      } else {
-        this.eventFiles = event.target.files;
-
-        this.imagesFile = Array.from(this.eventFiles);
-
-        if (this.eventFiles) {
-          this.filesArray = Array.from(this.eventFiles).map((file) =>
-            URL.createObjectURL(file)
-          );
-        }
-      }
+      axios
+        .post("portfolio/uploadimage", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            token: me.$store.state.token,
+          },
+        })
+        .then(function (response) {
+          me.editedItem.portfolioimages = [
+            ...me.editedItem.portfolioimages,
+            ...response.data,
+          ];
+          me.uploadingEditedArrayImages = false;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
-    savedImageUploaded: function () {
-      this.newEventFiles = event.target.files;
+    imageUploaded: function () {
+      let me = this;
 
-      this.imagesFile = Array.from(this.editedItem.images).concat(
-        Array.from(this.newEventFiles)
-      );
+      let formData = new FormData();
+      this.portfolioImages = Array.from(event.target.files);
+      this.portfolioImages.map(function (file) {
+        formData.append("images", file);
+      });
 
-      const updatedArray = Array.from(this.newEventFiles).map((file) =>
-        URL.createObjectURL(file)
-      );
-      this.editedItem.images = this.editedItem.images.concat(updatedArray);
+      me.uploadingImages = true;
 
-      this.eventFiles = { ...this.newEventFiles };
+      axios
+        .post("portfolio/uploadimage", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            token: me.$store.state.token,
+          },
+        })
+        .then(function (response) {
+          me.uploadedImages = [...me.uploadedImages, ...response.data];
+          me.uploadingImages = false;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
   },
   computed: {
@@ -584,7 +637,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .addNew {
   margin-bottom: 10px;
@@ -595,9 +647,7 @@ export default {
   display: inline-flex !important;
   float: left;
 }
-/* .v-application .align-center {
-  align-items: flex-start !important;
-} */
+
 .removeButton {
   position: absolute;
   top: 10px;
@@ -615,8 +665,6 @@ export default {
   max-width: 200px;
   border: 3px solid #fff;
   margin-bottom: 20px;
-
-  /* Default text */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -631,6 +679,12 @@ export default {
 
 .inpFile {
   display: none;
+}
+
+.skeleton {
+  display: inline-grid !important;
+  border: 3px solid #fff;
+  margin-bottom: 20px;
 }
 </style>
 

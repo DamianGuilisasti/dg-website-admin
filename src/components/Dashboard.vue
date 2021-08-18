@@ -18,7 +18,7 @@
 
           <v-card-subtitle>Ingreso mensual.</v-card-subtitle>
 
-<!--           <v-card-actions>
+          <!--           <v-card-actions>
             <v-btn text> Ver estadísticas </v-btn>
           </v-card-actions> -->
         </v-card>
@@ -41,7 +41,7 @@
 
           <v-card-subtitle>Clientes.</v-card-subtitle>
 
-<!--           <v-card-actions>
+          <!--           <v-card-actions>
             <v-btn text> Ver estadísticas </v-btn>
           </v-card-actions> -->
         </v-card>
@@ -64,7 +64,7 @@
 
           <v-card-subtitle>Gasto mensual.</v-card-subtitle>
 
-<!--           <v-card-actions>
+          <!--           <v-card-actions>
             <v-btn text> Ver estadísticas </v-btn>
           </v-card-actions> -->
         </v-card>
@@ -89,7 +89,7 @@
 
           <v-card-subtitle>Ganancia Neta.</v-card-subtitle>
 
-<!--           <v-card-actions>
+          <!--           <v-card-actions>
             <v-btn text> Ver estadísticas </v-btn>
           </v-card-actions> -->
         </v-card>
@@ -135,8 +135,10 @@ export default {
     initializeExpenses() {
       let me = this;
       let total = 0;
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       axios
-        .get("expenses/list")
+        .get("expenses/list", configuration)
         .then(function (response) {
           response.data.map(function (i) {
             total += i.price;

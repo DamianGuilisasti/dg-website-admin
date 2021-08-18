@@ -747,7 +747,7 @@ export default {
               token: me.$store.state.token,
             },
           })
-          .then(function (response) {
+          .then(function () {
             me.$store.dispatch("removeLoadingOverlay");
             me.$store.dispatch("setSnackbar", {
               text: "Se envío correctamente el presupuesto.",

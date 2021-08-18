@@ -142,14 +142,17 @@ export default {
   methods: {
     forgotPassword() {
       let me = this;
+      me.$store.dispatch("setLoadingOverlay");
       axios
         .post("/user/forgotpassword", { email: this.resetEmail })
-        .then(function (response) {
+        .then(function () {
+          me.$store.dispatch("removeLoadingOverlay");
           me.$store.dispatch("setSnackbar", {
             text: `Se envío un email a tu correo para que puedas restablecer tu contraseña.`,
           });
         })
         .catch(function (error) {
+          console.log(error);
           if (error.response.status === 404 || 401) {
             me.$store.dispatch("setSnackbar", {
               text: `No existe un usuario con este email.`,

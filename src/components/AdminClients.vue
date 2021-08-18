@@ -687,6 +687,8 @@ export default {
 
     save() {
       let me = this;
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       if (this.editedIndex > -1) {
         const servicesUpdated = [];
 
@@ -700,15 +702,19 @@ export default {
         });
 
         axios
-          .put("clients/update", {
-            _id: this.editedItem._id,
-            name: this.editedItem.name,
-            lastname: this.editedItem.lastname,
-            email: this.editedItem.email,
-            address: this.editedItem.address,
-            phone: this.editedItem.phone,
-            services: servicesUpdated,
-          })
+          .put(
+            "clients/update",
+            {
+              _id: this.editedItem._id,
+              name: this.editedItem.name,
+              lastname: this.editedItem.lastname,
+              email: this.editedItem.email,
+              address: this.editedItem.address,
+              phone: this.editedItem.phone,
+              services: servicesUpdated,
+            },
+            configuration
+          )
           .then(function (response) {
             me.initialize();
             me.$store.dispatch("setSnackbar", {
@@ -716,7 +722,7 @@ export default {
                 response.data.name + " " + response.data.lastname
               }.`,
             });
-          })
+          }, configuration)
           .catch(function (error) {
             console.log(error);
           });
@@ -731,14 +737,18 @@ export default {
           });
         });
         axios
-          .post("clients/add", {
-            name: this.editedItem.name,
-            lastname: this.editedItem.lastname,
-            email: this.editedItem.email,
-            address: this.editedItem.address,
-            phone: this.editedItem.phone,
-            services: servicesSelected,
-          })
+          .post(
+            "clients/add",
+            {
+              name: this.editedItem.name,
+              lastname: this.editedItem.lastname,
+              email: this.editedItem.email,
+              address: this.editedItem.address,
+              phone: this.editedItem.phone,
+              services: servicesSelected,
+            },
+            configuration
+          )
           .then(function (response) {
             me.initialize();
             me.$store.dispatch("setSnackbar", {

@@ -231,19 +231,11 @@
         &copy; {{ new Date().getFullYear() }}</span
       >
     </v-footer>
-    <v-overlay v-if="loadingOverlay">
-      <v-progress-circular
-        color="#fff"
-        indeterminate
-        size="100"
-      ></v-progress-circular>
-    </v-overlay>
   </v-app>
 </template>
 
 <script>
 import axios from "axios";
-import { mapState } from "vuex";
 export default {
   name: "AdminView",
   data: () => ({
@@ -251,10 +243,12 @@ export default {
     userInfo: { rol: [{ name: "" }] },
     initials: "",
     companyName: "",
+    dataId: "",
   }),
   computed: {
     website() {
       return (
+        "https://" +
         window.location.hostname.split(".")[1] +
         "." +
         window.location.hostname.split(".")[2] +
@@ -262,15 +256,41 @@ export default {
         window.location.hostname.split(".")[3]
       );
     },
-    ...mapState(["loadingOverlay"]),
   },
   methods: {
+    setCompanyURL() {
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
+      const website =
+        "https://" +
+        window.location.hostname.split(".")[1] +
+        "." +
+        window.location.hostname.split(".")[2] +
+        "." +
+        window.location.hostname.split(".")[3];
+
+      axios
+        .put(
+          "settings/updateCompanyURL",
+          {
+            _id: this.dataId,
+            companyURL: website,
+          },
+          configuration
+        )
+        .then(function () {})
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
     getSettings() {
       let me = this;
       axios
         .get("settings/list")
         .then(function (response) {
           me.companyName = response.data[0].companyName;
+          me.dataId = response.data[0]._id;
+          me.setCompanyURL();
         })
         .catch(function (error) {
           console.log(error);
@@ -291,6 +311,7 @@ export default {
         })
         .catch(function (error) {
           console.log(error);
+          me.logout();
         });
     },
     isAdmin() {
@@ -301,7 +322,7 @@ export default {
       this.$store.dispatch("exit");
     },
   },
-  created() {
+  async created() {
     this.$store.dispatch("autoLogin");
     this.getUserInfo();
     this.getSettings();

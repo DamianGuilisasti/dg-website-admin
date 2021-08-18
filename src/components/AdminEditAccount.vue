@@ -3,29 +3,34 @@
     <h1 class="pb-6">Editar cuenta</h1>
     <v-text-field
       v-model="userInfo.name"
-      :counter="15"
+      counter
+      maxlength="20"
       label="Nombre"
     ></v-text-field>
     <v-text-field
       v-model="userInfo.lastname"
-      :counter="15"
+      counter
+      maxlength="20"
       label="Apellido"
     ></v-text-field>
     <v-text-field
       v-model="userInfo.username"
-      :counter="15"
+      counter
+      maxlength="25"
       label="Usuario"
     ></v-text-field>
     <v-text-field
       v-model="userInfo.email"
-      :counter="50"
+      counter
+      maxlength="50"
       label="Email"
       disabled
     ></v-text-field>
     <v-text-field
       v-model="password"
       :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-      :counter="15"
+      counter
+      maxlength="20"
       label="Contraseña Actual"
       :type="show1 ? 'text' : 'password'"
       @click:append="show1 = !show1"
@@ -33,12 +38,15 @@
     <v-text-field
       v-model="newpassword"
       :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
-      :counter="15"
+      counter
+      maxlength="20"
       label="Nueva Contraseña"
       :type="show2 ? 'text' : 'password'"
       @click:append="show2 = !show2"
     ></v-text-field>
     <v-text-field
+      counter
+      maxlength="20"
       v-model="confirmnewpassword"
       :append-icon="show3 ? 'mdi-eye' : 'mdi-eye-off'"
       :rules="[

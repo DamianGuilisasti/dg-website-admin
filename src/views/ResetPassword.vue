@@ -79,15 +79,18 @@ export default {
   methods: {
     resetPassword() {
       let me = this;
+      me.$store.dispatch("setLoadingOverlay");
       axios
         .post(`/user/resetpassword/${this.$route.params.token}`, {
           password: this.password,
           confirmpassword: this.confirmpassword,
         })
-        .then(function (response) {
+        .then(function () {
+          me.$store.dispatch("removeLoadingOverlay");
           me.$store.dispatch("setSnackbar", {
             text: `Se actualizó correctamente la contraseña.`,
           });
+          this.$router.push({ name: "Login" });
         })
         .catch(function (error) {
           if (error.response.status === 404 || 401) {
