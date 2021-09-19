@@ -58,6 +58,10 @@
                           return-object
                           :items="clients"
                         ></v-select>
+                        <v-text-field
+                          v-model="editedItem.name"
+                          label="Nombre"
+                        ></v-text-field>
                         <v-textarea
                           v-model="editedItem.description"
                           label="Descripción"
@@ -71,11 +75,11 @@
                           label="Solución"
                         ></v-text-field>
                         <v-text-field
-                          v-model="editedItem.proyectType"
+                          v-model="editedItem.projectType"
                           label="Tipo de proyecto"
                         ></v-text-field>
                         <v-text-field
-                          v-model="editedItem.proyectLink"
+                          v-model="editedItem.projectLink"
                           label="Link del proyecto"
                         ></v-text-field>
                       </v-col>
@@ -274,11 +278,17 @@ export default {
     dialog: false,
     editedIndex: -1,
     editedItem: {
+      client: "",
       name: "",
-      price: "",
+      clientReview: "",
+      description: "",
+      portfolioimages: [],
+      problem: "",
+      solution: "",
     },
     defaultItem: {
       client: "",
+      name: "",
       clientReview: "",
       description: "",
       portfolioimages: [],
@@ -296,7 +306,11 @@ export default {
       {
         text: "Tipo de proyecto",
         filterable: true,
-        value: `proyectType`,
+        value: `projectType`,
+      },
+      {
+        text: "Slug",
+        value: `slug`,
       },
       { text: "Estado", filterable: true, value: "state" },
       { text: "Acciones", value: "actions" },
@@ -309,8 +323,6 @@ export default {
         .querySelector("button")
         .click();
     },
-    //DataTable
-
     clientName(item) {
       return item.client.name + " " + item.client.lastname;
     },
@@ -453,11 +465,12 @@ export default {
             {
               _id: this.editedItem._id,
               client: this.editedItem.client._id,
+              name: this.editedItem.name,
               description: this.editedItem.description || "",
               problem: this.editedItem.problem || "",
               solution: this.editedItem.solution || "",
-              proyectType: this.editedItem.proyectType || "",
-              proyectLink: this.editedItem.proyectLink || "",
+              projectType: this.editedItem.projectType || "",
+              projectLink: this.editedItem.projectLink || "",
               clientReview: this.editedItem.clientReview || "",
               portfolioimages: JSON.stringify(uploadedImagesOrdered) || "",
               deletedImagesPublicID: this.deletedImagesPublicID || "",
@@ -499,11 +512,12 @@ export default {
             "portfolio/add",
             {
               client: this.editedItem.client._id,
+              name: this.editedItem.name,
               description: this.editedItem.description || "",
               problem: this.editedItem.problem || "",
               solution: this.editedItem.solution || "",
-              proyectType: this.editedItem.proyectType || "",
-              proyectLink: this.editedItem.proyectLink || "",
+              projectType: this.editedItem.projectType || "",
+              projectLink: this.editedItem.projectLink || "",
               clientReview: this.editedItem.clientReview || "",
               portfolioimages: JSON.stringify(uploadedImagesOrdered) || "",
               deletedImagesPublicID: this.deletedImagesPublicID || "",
@@ -531,21 +545,20 @@ export default {
     },
     cleanForm() {
       this.editedItem.client = "";
+      this.editedItem.name = "";
       this.editedItem.description = "";
       this.editedItem.problem = "";
       this.editedItem.solution = "";
-      this.editedItem.proyectType = "";
-      this.editedItem.proyectLink = "";
+      this.editedItem.projectType = "";
+      this.editedItem.projectLink = "";
       this.editedItem.clientReview = "";
       this.uploadedImages = "";
       this.deletedImagesPublicID = [];
     },
     initialize() {
       let me = this;
-      let header = { token: this.$store.state.token };
-      let configuration = { headers: header };
       axios
-        .get("portfolio/list", configuration)
+        .get("portfolio/list")
         .then(function (response) {
           me.portfolios = response.data;
           me.loadingData = false;
@@ -647,7 +660,6 @@ export default {
   display: inline-flex !important;
   float: left;
 }
-
 .removeButton {
   position: absolute;
   top: 10px;
@@ -671,16 +683,13 @@ export default {
   font-weight: bold;
   color: #ccc;
 }
-
 .image_preview__image {
   display: block;
   width: 100%;
 }
-
 .inpFile {
   display: none;
 }
-
 .skeleton {
   display: inline-grid !important;
   border: 3px solid #fff;

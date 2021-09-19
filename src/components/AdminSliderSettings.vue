@@ -262,9 +262,10 @@ export default {
         .put("sliders/update", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+            token: me.$store.state.token,
           },
         })
-        .then(function (response) {
+        .then(function () {
           //me.updateNewLogo();
           me.loadingLogo = false;
           me.$store.dispatch("setSnackbar", {

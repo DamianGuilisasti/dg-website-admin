@@ -412,8 +412,10 @@ export default {
     },
     deleteCompanyImg() {
       let me = this;
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       axios
-        .put("settings/deleteCompanyImg", { _id: this.dataId })
+        .put("settings/deleteCompanyImg", { _id: this.dataId }, configuration)
         .then(function () {
           me.imageUploaded = null;
           me.updateNewCompanyImg();
@@ -431,9 +433,11 @@ export default {
     },
     deleteLogo() {
       let me = this;
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       axios
-        .put("settings/deleteLogo", { _id: this.dataId })
-        .then(function (response) {
+        .put("settings/deleteLogo", { _id: this.dataId }, configuration)
+        .then(function () {
           me.imageUploaded = null;
           me.updateNewLogo();
           me.$store.dispatch("setSnackbar", {
@@ -450,6 +454,7 @@ export default {
     },
     updateNewCompanyImg() {
       let me = this;
+
       axios
         .get("settings/list")
         .then(function (response) {
@@ -472,15 +477,21 @@ export default {
     },
     updateInfo() {
       let me = this;
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       axios
-        .put("settings/updateInfo", {
-          _id: this.dataId,
-          aboutInfo: this.aboutInfo,
-          companyName: this.companyName,
-          companyPhone: this.companyPhone,
-          companyEmail: this.companyEmail,
-          companyAddress: this.companyAddress,
-        })
+        .put(
+          "settings/updateInfo",
+          {
+            _id: this.dataId,
+            aboutInfo: this.aboutInfo,
+            companyName: this.companyName,
+            companyPhone: this.companyPhone,
+            companyEmail: this.companyEmail,
+            companyAddress: this.companyAddress,
+          },
+          configuration
+        )
         .then(function (response) {
           me.$store.dispatch("setSnackbar", {
             text: "Se actualizo correctamente la información.",
@@ -496,16 +507,22 @@ export default {
     },
     updateSocialMedia() {
       let me = this;
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       axios
-        .put("settings/updateSocialMedia", {
-          _id: this.dataId,
-          facebook: this.facebook,
-          instagram: this.instagram,
-          twitter: this.twitter,
-          google: this.google,
-          youtube: this.youtube,
-          linkedin: this.linkedin,
-        })
+        .put(
+          "settings/updateSocialMedia",
+          {
+            _id: this.dataId,
+            facebook: this.facebook,
+            instagram: this.instagram,
+            twitter: this.twitter,
+            google: this.google,
+            youtube: this.youtube,
+            linkedin: this.linkedin,
+          },
+          configuration
+        )
         .then(function (response) {
           me.$store.dispatch("setSnackbar", {
             text: "Se actuxalizo correctamente las redes sociales.",
@@ -521,12 +538,18 @@ export default {
     },
     updateWhatsapp() {
       let me = this;
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       axios
-        .put("settings/updateWhatsapp", {
-          _id: this.dataId,
-          phone: this.phone,
-          text: this.text,
-        })
+        .put(
+          "settings/updateWhatsapp",
+          {
+            _id: this.dataId,
+            phone: this.phone,
+            text: this.text,
+          },
+          configuration
+        )
         .then(function (response) {
           me.$store.dispatch("setSnackbar", {
             text: "Se actualizo correctamente la información de Whatsapp.",
@@ -547,6 +570,7 @@ export default {
       }
       this.loadingLogo = true;
       let me = this;
+
       let formData = new FormData();
 
       formData.append("_id", this.dataId);
@@ -556,6 +580,7 @@ export default {
         .put("settings/updateLogo", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+            token: this.$store.state.token,
           },
         })
         .then(function (response) {
@@ -580,6 +605,7 @@ export default {
       }
       this.loadingLogo = true;
       let me = this;
+
       let formData = new FormData();
 
       formData.append("_id", this.dataId);
@@ -589,6 +615,7 @@ export default {
         .put("settings/updateCompanyImg", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+            token: this.$store.state.token,
           },
         })
         .then(function (response) {

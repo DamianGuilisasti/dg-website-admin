@@ -9,11 +9,12 @@
               <v-row>
                 <v-col cols="12">
                   <v-img
+                    v-if="imageURL"
                     class="panel-img"
-                    lazy-src="../assets/Logo Guilisasti Blanco.png"
+                    :lazy-src="imageURL"
                     max-height="100%"
                     max-width="30%"
-                    src="../assets/Logo Guilisasti Blanco.png"
+                    :src="imageURL"
                   >
                   </v-img>
                 </v-col>
@@ -132,6 +133,7 @@ export default {
     source: String,
   },
   data: () => ({
+    imageURL: "",
     email: "",
     password: "",
     errorMessage: null,
@@ -140,6 +142,17 @@ export default {
     resetEmail: "",
   }),
   methods: {
+    getSettings() {
+      let me = this;
+      axios
+        .get("settings/list")
+        .then(function (response) {
+          me.imageURL = response.data[0].logoURL.imageURL;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
     forgotPassword() {
       let me = this;
       me.$store.dispatch("setLoadingOverlay");
@@ -181,6 +194,9 @@ export default {
           }
         });
     },
+  },
+  created() {
+    this.getSettings();
   },
 };
 </script>
