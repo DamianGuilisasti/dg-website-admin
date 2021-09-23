@@ -164,9 +164,11 @@ export default {
   methods: {
     saveNewOrder() {
       let me = this;
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       axios
-        .post("sliders/updateIndex", { sliders: this.sliders })
-        .then(function (response) {
+        .post("sliders/updateIndex", { sliders: this.sliders }, configuration)
+        .then(function () {
           me.$store.dispatch("setSnackbar", {
             text: "Se actualizó correctamente el orden de los Sliders.",
           });
@@ -226,6 +228,7 @@ export default {
         .post("sliders/add", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+            token: me.$store.state.token,
           },
         })
         .then(function () {
@@ -295,7 +298,7 @@ export default {
               token: me.$store.state.token,
             },
           })
-          .then(function (response) {
+          .then(function () {
             me.getSliders();
             me.$store.dispatch("setSnackbar", {
               text: `Se eliminó correctamente al slider.`,
@@ -312,7 +315,6 @@ export default {
     cleanForm() {
       (this.imageFile = ""),
         (this.imageUploaded = null),
-        //(this.editedItem.imageURL = ""),
         (this.loadingLogo = false),
         (this.editedItem.title = ""),
         (this.editedItem.subtitle = "");
