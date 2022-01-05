@@ -511,7 +511,7 @@ export default {
       let budgetId = item._id;
       confirm("Estás a punto de eliminar el presupuesto ¿Continuar?") &&
         axios
-          .delete("budgets/delete", {
+          .delete("budgets", {
             params: { id: budgetId },
             headers: { token: me.$store.state.token },
           })
@@ -616,7 +616,7 @@ export default {
       let header = { token: this.$store.state.token };
       let configuration = { headers: header };
       axios
-        .get("budgets/list", configuration)
+        .get("budgets", configuration)
         .then(function (response) {
           me.budgets = response.data;
           me.loadingData = false;
@@ -631,7 +631,7 @@ export default {
       let configuration = { headers: header };
       let clientsList = [];
       axios
-        .get("clients/list", configuration)
+        .get("clients", configuration)
         .then(function (response) {
           clientsList = response.data;
           clientsList.map(function (i) {
@@ -648,7 +648,7 @@ export default {
       let configuration = { headers: header };
       let serviceList = [];
       axios
-        .get("services/list", configuration)
+        .get("clientservices", configuration)
         .then(function (response) {
           serviceList = response.data;
           serviceList.map(function (i) {

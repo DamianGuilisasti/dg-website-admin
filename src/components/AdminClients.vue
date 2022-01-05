@@ -15,12 +15,8 @@
         </template>
 
         <template v-slot:item.monthlypayment="{ item }">
-          {{ clientMonthlyPayment(item) }}
+          {{ Math.round(clientMonthlyPayment(item)) }}
         </template>
-
-        <!--         <template v-slot:item.totalpayment="{ item }">
-          {{ clientTotalPayment(item) }}
-        </template> -->
 
         <template v-slot:item.state="{ item }">
           <v-chip :color="getStateColor(item.state)" dark>
@@ -103,8 +99,8 @@
                     <v-row>
                       <v-col cols="12">
                         <v-text-field
-                          v-model="editedItem.address"
-                          label="Dirección"
+                          v-model="editedItem.company"
+                          label="Empresa"
                         ></v-text-field>
                       </v-col>
                     </v-row>
@@ -178,84 +174,6 @@
                         </v-data-table>
                       </v-col>
                     </v-row>
-
-                    <!--                     <v-row align="center" v-if="servicesArray.length > 0">
-                      <v-col class="d-flex" cols="12">
-                        <v-simple-table>
-                          <template v-slot:default>
-                            <thead>
-                              <tr>
-                                <th class="text-left">Servicio</th>
-                                <th class="text-left">Fecha de alta</th>
-                                <th class="text-left">Cancelar</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr
-                                v-for="(item, k) in servicesArray"
-                                :key="item.text"
-                              >
-                                <td>{{ item.text }}</td>
-                                <td>
-                                  <v-menu
-                                    :ref="'dialog' + k"
-                                    v-model="item.menu"
-                                    :close-on-content-click="false"
-                                    :return-value.sync="item.date"
-                                    transition="scale-transition"
-                                    offset-y
-                                    min-width="290px"
-                                  >
-                                    <template v-slot:activator="{ on, attrs }">
-                                      <v-text-field
-                                        v-model="item.serviceDate"
-                                        label="Seleccione fecha de alta"
-                                        prepend-icon="mdi-calendar"
-                                        readonly
-                                        v-bind="attrs"
-                                        v-on="on"
-                                      ></v-text-field>
-                                    </template>
-
-                                    <v-date-picker
-                                      v-model="item.serviceDate"
-                                      no-title
-                                      scrollable
-                                    >
-                                      <v-spacer></v-spacer>
-                                      <v-btn
-                                        text
-                                        color="primary"
-                                        @click="item.menu = false"
-                                      >
-                                        Cancel
-                                      </v-btn>
-                                      <v-btn
-                                        text
-                                        color="primary"
-                                        @click="
-                                          $refs['dialog' + k][0].save(item.date)
-                                        "
-                                      >
-                                        OK
-                                      </v-btn>
-                                    </v-date-picker>
-                                  </v-menu>
-                                </td>
-                                <td>
-                                    <v-icon
-                                      small
-                                      @click="servicesArray.splice(item, 1)"
-                                      class="mr-2"
-                                      >mdi-cancel</v-icon
-                                    >
-                                </td>
-                              </tr>
-                            </tbody>
-                          </template>
-                        </v-simple-table>
-                      </v-col>
-                    </v-row> -->
                   </v-container>
                 </v-card-text>
 
@@ -344,6 +262,11 @@ export default {
         value: "phone",
       },
       {
+        text: "Empresa",
+        filterable: true,
+        value: "company",
+      },
+      {
         text: "Servicios",
         filterable: true,
         value: "services",
@@ -358,11 +281,6 @@ export default {
         filterable: true,
         value: "isPaid",
       },
-      /*       {
-        text: "Total pagado",
-        filterable: true,
-        value: "totalpayment",
-      }, */
       { text: "Estado", filterable: true, value: "state" },
       { text: "Acciones", value: "actions" },
     ],
@@ -372,10 +290,6 @@ export default {
         align: "start",
         value: "text",
       },
-      /*       {
-        text: "Fecha de alta",
-        value: "serviceDate",
-      }, */
       { text: "Eliminar servicio", value: "actions" },
     ],
     servicesHeaderEdited: [
@@ -384,10 +298,6 @@ export default {
         align: "start",
         value: "name",
       },
-      /*       {
-        text: "Fecha de alta",
-        value: "serviceDate",
-      }, */
       { text: "Eliminar servicio", value: "actions" },
     ],
     servicesArray: [],
@@ -412,13 +322,10 @@ export default {
     ],
   }),
   methods: {
-    //Services
-
     deleteClientService(item) {
       const index = this.editedItem.services.indexOf(item);
       this.editedItem.services.splice(index, 1);
     },
-
     servicesAdded(event) {
       let me = this;
       let id = event;
@@ -428,7 +335,6 @@ export default {
           if (repeated == -1) {
             me.servicesArray.push({
               text: i.text,
-              //serviceDate: new Date().toISOString().substr(0, 10),
             });
           } else {
             me.$store.dispatch("setSnackbar", {
@@ -461,14 +367,13 @@ export default {
         }
       });
     },
-
     servicesSelect() {
       let me = this;
       let header = { token: this.$store.state.token };
       let configuration = { headers: header };
       let serviceList = [];
       axios
-        .get("services/list", configuration)
+        .get("clientservices", configuration)
         .then(function (response) {
           serviceList = response.data;
           serviceList.map(function (i) {
@@ -487,15 +392,20 @@ export default {
       return elements.join(", ");
     },
     clientMonthlyPayment(item) {
-      let price = 0;
+      let total = 0;
+      let monthly = 0;
+      let annual = 0;
       item.services.map(function (i) {
-        price += i.price;
+        if (i.serviceType == "Mensual") {
+          monthly += i.price;
+        } else if (i.serviceType == "Anual") {
+          annual += i.price;
+        }
       });
-      return price;
+      let annualPrice = annual / 12;
+      total = monthly + annualPrice;
+      return total;
     },
-
-    //DataTable
-
     getStateColor(state) {
       if (state === 1) return "green";
       else return "red";
@@ -513,14 +423,19 @@ export default {
       if (isPaid === true) return "Si";
       else return "No";
     },
-
     desactivateItem(item) {
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       let me = this;
       axios
-        .put("clients/desactivate", {
-          _id: item._id,
-        })
-        .then(function (response) {
+        .put(
+          "clients/desactivate",
+          {
+            _id: item._id,
+          },
+          configuration
+        )
+        .then(function () {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
             text: `Se desactivó correctamente el cliente ${
@@ -532,14 +447,19 @@ export default {
           console.log(error);
         });
     },
-
     activateItem(item) {
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       let me = this;
       axios
-        .put("clients/activate", {
-          _id: item._id,
-        })
-        .then(function (response) {
+        .put(
+          "clients/activate",
+          {
+            _id: item._id,
+          },
+          configuration
+        )
+        .then(function () {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
             text: `Se activó correctamente el cliente ${
@@ -551,14 +471,19 @@ export default {
           console.log(error);
         });
     },
-
     isPaidItem(item) {
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       let me = this;
       axios
-        .put("clients/clientIsPaid", {
-          _id: item._id,
-        })
-        .then(function (response) {
+        .put(
+          "clients/clientIsPaid",
+          {
+            _id: item._id,
+          },
+          configuration
+        )
+        .then(function () {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
             text: `El cliente ${
@@ -570,14 +495,19 @@ export default {
           console.log(error);
         });
     },
-
     isNotPaidItem(item) {
+      let header = { token: this.$store.state.token };
+      let configuration = { headers: header };
       let me = this;
       axios
-        .put("clients/clientIsNotPaid", {
-          _id: item._id,
-        })
-        .then(function (response) {
+        .put(
+          "clients/clientIsNotPaid",
+          {
+            _id: item._id,
+          },
+          configuration
+        )
+        .then(function () {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
             text: `El cliente ${
@@ -589,13 +519,10 @@ export default {
           console.log(error);
         });
     },
-
-    //Init
-
     initialize() {
       let me = this;
       axios
-        .get("clients/list")
+        .get("clients")
         .then(function (response) {
           me.clients = response.data;
           if (response.data.length == 0) {
@@ -607,62 +534,22 @@ export default {
           console.log(error);
         });
     },
-    /*     clientServices(item) {
-      const elements = [];
-      item.services.map(function (i) {
-        elements.push(i.service.name);
-      });
-      return elements.join(", ");
-    }, */
-
-    /* clientTotalPayment(item) {
-      //obtener la cantidad de DIAS que el cliente tuvo/tiene el servicio.
-      //dividir el costo del servicio /30 así se calcula cuanto paga por día.
-      //calcular diferencia de dias entre la fecha que solicitó el servicio y la fecha actual.
-      const today = new Date();
-
-      // To calculate the time difference of two dates
-      //const Difference_In_Time = today - item.services.  date1.getTime();
-
-      // To calculate the no. of days between two dates
-      //const Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
-
-      let total = 0;
-
-      item.services.map(function (i) {
-        // let time = today - i.serviceDate.date.getTime();
-        // let days = time / (1000 * 3600 * 24);
-        // let subtotal = days * i.service.price;
-        // total += subtotal;
-        // console.log(total);
-      });
-
-      let price = 0;
-      item.services.map(function (i) {
-        price += i.service.price;
-      });
-      return price;
-    }, */
-
-    //Edit
-
     editItem(item) {
       this.editedIndex = this.clients.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
-
-    //Delete
-
     deleteClient(item) {
       let me = this;
+      console.log(item);
       let clientId = item._id;
       confirm("Estás a punto de eliminar el cliente ¿Continuar?") &&
         axios
-          .delete("clients/delete", {
+          .delete("clients", {
             params: { id: clientId },
+            headers: { token: me.$store.state.token },
           })
-          .then(function (response) {
+          .then(function () {
             me.initialize();
             me.$store.dispatch("setSnackbar", {
               text: `Se eliminó correctamente el cliente ${
@@ -671,19 +558,21 @@ export default {
             });
           })
           .catch(function (error) {
-            console.log(error);
+            me.$store.dispatch("setSnackbar", {
+              text: `Antes de eliminar al cliente, se debe eliminar los Portafolios del cliente.`,
+              color: "red",
+            });
           });
     },
-
     close() {
       this.dialog = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
+        this.editedItem.services = null;
+        this.updatedServices = null;
       });
     },
-
-    //Save
 
     save() {
       let me = this;
@@ -693,7 +582,6 @@ export default {
         const servicesUpdated = [];
 
         this.editedItem.services.map(function (i) {
-          console.log(i);
           me.servicesList.map(function (u) {
             if (i.name == u.text) {
               servicesUpdated.push(u.value);
@@ -709,7 +597,7 @@ export default {
               name: this.editedItem.name,
               lastname: this.editedItem.lastname,
               email: this.editedItem.email,
-              address: this.editedItem.address,
+              company: this.editedItem.company,
               phone: this.editedItem.phone,
               services: servicesUpdated,
             },
@@ -743,7 +631,7 @@ export default {
               name: this.editedItem.name,
               lastname: this.editedItem.lastname,
               email: this.editedItem.email,
-              address: this.editedItem.address,
+              company: this.editedItem.company,
               phone: this.editedItem.phone,
               services: servicesSelected,
             },
@@ -779,8 +667,6 @@ export default {
   },
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 </style>
 

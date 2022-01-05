@@ -1,14 +1,14 @@
 <template>
   <div>
-    <h1 class="pb-6">Gastos</h1>
+    <h1 class="pb-6">Categorías</h1>
     <v-card>
       <v-data-table
         :headers="headers"
-        :items="expenses"
+        :items="categories"
         :search="search"
         :loading="loadingData"
-        loading-text="Cargando gastos... Por favor espere."
-        no-data-text="No hay información de gastos, por favor cargue nuevos gastos."
+        loading-text="Cargando categorías... Por favor espere."
+        no-data-text="No hay información de categorías, por favor cargue nuevas categorías."
       >
         <template v-slot:item.state="{ item }">
           <v-chip :color="getStateColor(item.state)" dark>
@@ -36,32 +36,27 @@
                   class="mb-2"
                   v-bind="attrs"
                   v-on="on"
-                  >Agregar Gasto</v-btn
+                  >Agregar categoría</v-btn
                 >
               </template>
               <v-card>
                 <v-card-title>
                   <span class="headline">{{ formTitle }}</span>
                 </v-card-title>
-
                 <v-card-text>
-                  <v-container>
-                    <v-row align="center" justify="space-around">
-                      <v-col cols="12">
-                        <v-text-field
-                          v-model="editedItem.name"
-                          label="Nombre"
-                        ></v-text-field>
-                      </v-col>
-
-                      <v-col cols="12">
-                        <v-text-field
-                          v-model="editedItem.price"
-                          label="Precio"
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                  </v-container>
+                  <v-row align="center" justify="space-around">
+                    <v-col cols="12">
+                      <v-text-field
+                        v-model="editedItem.name"
+                        label="Nombre"
+                        required
+                      ></v-text-field>
+                      <v-switch
+                        v-model="editedItem.state"
+                        :label="`¿Categoría activa?`"
+                      ></v-switch>
+                    </v-col>
+                  </v-row>
                 </v-card-text>
 
                 <v-card-actions>
@@ -99,35 +94,37 @@
 <script>
 import axios from "axios";
 export default {
+  inject: {
+    theme: {
+      default: { isDark: false },
+    },
+  },
   data: () => ({
+    categories: [],
     loadingData: true,
     dialog: false,
     editedIndex: -1,
     editedItem: {
       name: "",
-      price: "",
+      state: true,
+    },
+    defaultItem: {
+      name: "",
+      state: "1",
     },
     search: "",
     headers: [
       {
-        text: "Nombre",
+        text: "Categoría",
         align: "start",
         filterable: true,
         value: "name",
       },
-      {
-        text: "Precio",
-        filterable: true,
-        value: "price",
-      },
       { text: "Estado", filterable: true, value: "state" },
       { text: "Acciones", value: "actions" },
     ],
-    expenses: [],
   }),
   methods: {
-    //DataTable
-
     getStateColor(state) {
       if (state === 1) return "green";
       else return "red";
@@ -143,19 +140,19 @@ export default {
       let configuration = { headers: header };
       axios
         .put(
-          "expenses/desactivate",
+          "portfoliocategories/desactivate",
           {
             _id: item._id,
           },
           configuration
         )
-        .then(function () {
+        .then(function() {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
-            text: `Se desactivó correctamente el gasto.`,
+            text: `Se desactivó correctamente la categoría.`,
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
@@ -166,50 +163,53 @@ export default {
       let configuration = { headers: header };
       axios
         .put(
-          "expenses/activate",
+          "portfoliocategories/activate",
           {
             _id: item._id,
           },
           configuration
         )
-        .then(function () {
+        .then(function() {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
-            text: `Se activó correctamente el gasto.`,
+            text: `Se activó correctamente la categoría.`,
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
 
     editItem(item) {
-      this.editedIndex = this.expenses.indexOf(item);
+      this.editedIndex = this.categories.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
 
     deleteItem(item) {
       let me = this;
-      let expensesId = item._id;
-      confirm("Estás a punto de eliminar el gasto ¿Continuar?") &&
+      let portfolioId = item._id;
+      confirm("Estás a punto de eliminar la categoría ¿Continuar?") &&
         axios
-          .delete("expenses", {
-            params: { id: expensesId },
-            headers: { token: me.$store.state.token },
+          .delete("portfoliocategories", {
+            params: { id: portfolioId },
+            headers: {
+              token: me.$store.state.token,
+            },
           })
-          .then(function (response) {
+          .then(function() {
             me.initialize();
             me.$store.dispatch("setSnackbar", {
-              text: `Se eliminó correctamente el gasto.`,
+              text: `Se eliminó correctamente la categoría.`,
             });
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.log(error);
           });
     },
 
     close() {
+      this.initialize();
       this.dialog = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
@@ -221,69 +221,88 @@ export default {
       let me = this;
       let header = { token: this.$store.state.token };
       let configuration = { headers: header };
+
       if (this.editedIndex > -1) {
+        me.$store.dispatch("setLoadingOverlay");
+
         axios
           .put(
-            "expenses/update",
+            "portfoliocategories",
             {
               _id: this.editedItem._id,
               name: this.editedItem.name,
-              price: this.editedItem.price,
+              state: this.editedItem.state,
             },
             configuration
           )
-          .then(function () {
+          .then(function() {
             me.initialize();
+            me.$store.dispatch("removeLoadingOverlay");
             me.$store.dispatch("setSnackbar", {
-              text: `Se actualizó correctamente el gasto.`,
+              text: "Se actualizó correctamente la categoría.",
             });
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.log(error);
+            me.$store.dispatch("removeLoadingOverlay");
+            me.$store.dispatch("setSnackbar", {
+              text:
+                "Hubo un error al actualizar la categoría, por favor actualice la página e intente nuevamente.",
+              color: "error",
+            });
           });
       } else {
-        let me = this;
-        let header = { token: this.$store.state.token };
-        let configuration = { headers: header };
+        me.$store.dispatch("setLoadingOverlay");
+
         axios
           .post(
-            "expenses/add",
+            "portfoliocategories",
             {
               name: this.editedItem.name,
-              price: this.editedItem.price,
+              state: this.editedItem.state,
             },
             configuration
           )
-          .then(function (response) {
+          .then(function() {
             me.initialize();
+            me.$store.dispatch("removeLoadingOverlay");
             me.$store.dispatch("setSnackbar", {
-              text: `Se agregó correctamente el gasto.`,
+              text: "Se agregó correctamente la categoría.",
             });
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.log(error);
+            me.$store.dispatch("removeLoadingOverlay");
+            me.$store.dispatch("setSnackbar", {
+              text:
+                "Hubo un error al agregar la categoría, por favor actualice la página e intente nuevamente.",
+              color: "error",
+            });
           });
       }
+      this.cleanForm();
       this.close();
+    },
+    cleanForm() {
+      this.editedItem.name = "";
+      this.editedItem.state = "";
     },
     initialize() {
       let me = this;
-      let header = { token: this.$store.state.token };
-      let configuration = { headers: header };
       axios
-        .get("expenses", configuration)
-        .then(function (response) {
-          me.expenses = response.data;
+        .get("portfoliocategories")
+        .then(function(response) {
+          me.categories = response.data;
           me.loadingData = false;
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "Nuevo gasto" : "Editar gasto";
+      return this.editedIndex === -1 ? "Nueva categoría" : "Editar categoría";
     },
   },
   created() {
@@ -292,9 +311,13 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+.inpFile {
+  display: none;
+}
+.skeleton {
+  display: inline-grid !important;
+  border: 3px solid #fff;
+  margin-bottom: 20px;
+}
 </style>
-
-
-

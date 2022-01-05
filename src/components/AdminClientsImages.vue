@@ -11,7 +11,7 @@
     </v-row>
     <v-row>
       <draggable
-        style="display: inline-flex"
+        style="display: contents"
         :list="logos"
         ghost-class="ghost"
         :move="checkMove"
@@ -130,7 +130,7 @@ export default {
   }),
 
   methods: {
-    checkMove: function (e) {
+    checkMove: function(e) {
       this.newOrder = true;
     },
     saveNewOrder() {
@@ -139,16 +139,17 @@ export default {
       let configuration = { headers: header };
       axios
         .post("logos/updateIndex", { logos: this.logos }, configuration)
-        .then(function (response) {
+        .then(function(response) {
           me.$store.dispatch("setSnackbar", {
             text: "Se actualizó correctamente el orden de los Logos.",
           });
           me.getLogos();
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text: "Hubo un error al actualizar el orden de los Logos, por favor actualice la página e intente nuevamente.",
+            text:
+              "Hubo un error al actualizar el orden de los Logos, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -158,19 +159,19 @@ export default {
       let logoId = logo._id;
       confirm("Estás a punto de eliminar el logo, ¿Continuar?") &&
         axios
-          .delete("logos/delete", {
+          .delete("logos", {
             params: { id: logoId },
             headers: {
               token: me.$store.state.token,
             },
           })
-          .then(function (response) {
+          .then(function(response) {
             me.getLogos();
             me.$store.dispatch("setSnackbar", {
               text: `Se eliminó correctamente el logo.`,
             });
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.log(error);
             me.$store.dispatch("setSnackbar", {
               text: `No se pudo eliminar el logo, por favor actualice e intente nuevamente.`,
@@ -181,11 +182,11 @@ export default {
     getLogos() {
       let me = this;
       axios
-        .get("logos/list")
-        .then(function (response) {
+        .get("logos")
+        .then(function(response) {
           me.logos = response.data;
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
@@ -200,13 +201,13 @@ export default {
       formData.append("image", this.imageFile);
 
       axios
-        .post("logos/add", formData, {
+        .post("logos", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             token: me.$store.state.token,
           },
         })
-        .then(function (response) {
+        .then(function(response) {
           me.loadingLogo = false;
           me.$store.dispatch("setSnackbar", {
             text: "Se subió correctamente el logo.",
@@ -214,10 +215,11 @@ export default {
           me.cleanForm();
           me.getLogos();
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text: "Hubo un error al subir el logo, por favor actualice la página e intente nuevamente.",
+            text:
+              "Hubo un error al subir el logo, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -235,7 +237,7 @@ export default {
     },
   },
   watch: {
-    imageUploaded: function () {
+    imageUploaded: function() {
       this.imageFile = event.target.files[0];
     },
   },
@@ -271,5 +273,16 @@ export default {
 }
 .moveCursor:hover {
   cursor: move;
+}
+@media (min-width: 1264px) {
+}
+.container {
+  max-width: none !important;
+}
+
+@media (min-width: 960px) {
+}
+.container {
+  max-width: none !important;
 }
 </style>

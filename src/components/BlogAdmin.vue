@@ -353,7 +353,7 @@ export default {
     initialize() {
       let me = this;
       axios
-        .get("posts/list")
+        .get("posts")
         .then(function (response) {
           me.posts = response.data;
           me.loadingData = false;

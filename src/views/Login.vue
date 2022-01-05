@@ -145,7 +145,7 @@ export default {
     getSettings() {
       let me = this;
       axios
-        .get("settings/list")
+        .get("settings")
         .then(function (response) {
           me.imageURL = response.data[0].logoURL.imageURL;
         })
@@ -157,7 +157,7 @@ export default {
       let me = this;
       me.$store.dispatch("setLoadingOverlay");
       axios
-        .post("/user/forgotpassword", { email: this.resetEmail })
+        .post("/users/forgotpassword", { email: this.resetEmail })
         .then(function () {
           me.$store.dispatch("removeLoadingOverlay");
           me.$store.dispatch("setSnackbar", {
@@ -177,7 +177,7 @@ export default {
     login() {
       let me = this;
       axios
-        .post("/user/login", { email: this.email, password: this.password })
+        .post("/users/login", { email: this.email, password: this.password })
         .then((response) => {
           return response.data;
         })

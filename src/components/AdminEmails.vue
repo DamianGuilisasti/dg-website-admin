@@ -135,7 +135,7 @@ export default {
     getClients() {
       let me = this;
       axios
-        .get("/clients/list")
+        .get("/clients")
         .then(function (response) {
           me.clientsList = response.data;
           me.clientsList.map(function (i) {

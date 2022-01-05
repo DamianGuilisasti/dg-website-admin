@@ -1,14 +1,14 @@
 <template>
   <div>
-    <h1 class="pb-6">Gastos</h1>
+    <h1 class="pb-6">Servicios</h1>
     <v-card>
       <v-data-table
         :headers="headers"
-        :items="expenses"
+        :items="services"
         :search="search"
         :loading="loadingData"
-        loading-text="Cargando gastos... Por favor espere."
-        no-data-text="No hay información de gastos, por favor cargue nuevos gastos."
+        loading-text="Cargando servicios... Por favor espere."
+        no-data-text="No hay información de servicios, por favor cargue nuevos servicios."
       >
         <template v-slot:item.state="{ item }">
           <v-chip :color="getStateColor(item.state)" dark>
@@ -36,7 +36,7 @@
                   class="mb-2"
                   v-bind="attrs"
                   v-on="on"
-                  >Agregar Gasto</v-btn
+                  >Agregar servicio</v-btn
                 >
               </template>
               <v-card>
@@ -56,9 +56,24 @@
 
                       <v-col cols="12">
                         <v-text-field
+                          v-model="editedItem.description"
+                          label="Descripción"
+                        ></v-text-field>
+                      </v-col>
+
+                      <v-col cols="12">
+                        <v-text-field
                           v-model="editedItem.price"
                           label="Precio"
                         ></v-text-field>
+                      </v-col>
+
+                      <v-col cols="12">
+                        <v-select
+                          label="Tipo de servicio"
+                          v-model="editedItem.serviceType"
+                          :items="servicesType"
+                        ></v-select>
                       </v-col>
                     </v-row>
                   </v-container>
@@ -100,6 +115,7 @@
 import axios from "axios";
 export default {
   data: () => ({
+    servicesType: ["Fijo", "Mensual", "Anual"],
     loadingData: true,
     dialog: false,
     editedIndex: -1,
@@ -116,6 +132,14 @@ export default {
         value: "name",
       },
       {
+        text: "Descripción",
+        value: "description",
+      },
+      {
+        text: "Tipo de servicio",
+        value: "serviceType",
+      },
+      {
         text: "Precio",
         filterable: true,
         value: "price",
@@ -123,7 +147,7 @@ export default {
       { text: "Estado", filterable: true, value: "state" },
       { text: "Acciones", value: "actions" },
     ],
-    expenses: [],
+    services: [],
   }),
   methods: {
     //DataTable
@@ -143,16 +167,16 @@ export default {
       let configuration = { headers: header };
       axios
         .put(
-          "expenses/desactivate",
+          "clientservices/desactivate",
           {
             _id: item._id,
           },
           configuration
         )
-        .then(function () {
+        .then(function (response) {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
-            text: `Se desactivó correctamente el gasto.`,
+            text: `Se desactivó correctamente el servicio.`,
           });
         })
         .catch(function (error) {
@@ -166,16 +190,16 @@ export default {
       let configuration = { headers: header };
       axios
         .put(
-          "expenses/activate",
+          "clientservices/activate",
           {
             _id: item._id,
           },
           configuration
         )
-        .then(function () {
+        .then(function (response) {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
-            text: `Se activó correctamente el gasto.`,
+            text: `Se activó correctamente el servicio.`,
           });
         })
         .catch(function (error) {
@@ -184,24 +208,26 @@ export default {
     },
 
     editItem(item) {
-      this.editedIndex = this.expenses.indexOf(item);
+      this.editedIndex = this.services.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
 
     deleteItem(item) {
       let me = this;
-      let expensesId = item._id;
-      confirm("Estás a punto de eliminar el gasto ¿Continuar?") &&
+      let serviceId = item._id;
+      confirm("Estás a punto de eliminar el servicio ¿Continuar?") &&
         axios
-          .delete("expenses", {
-            params: { id: expensesId },
-            headers: { token: me.$store.state.token },
+          .delete("clientservices", {
+            params: { id: serviceId },
+            headers: {
+              token: me.$store.state.token,
+            },
           })
           .then(function (response) {
             me.initialize();
             me.$store.dispatch("setSnackbar", {
-              text: `Se eliminó correctamente el gasto.`,
+              text: `Se eliminó correctamente el servicio.`,
             });
           })
           .catch(function (error) {
@@ -224,18 +250,20 @@ export default {
       if (this.editedIndex > -1) {
         axios
           .put(
-            "expenses/update",
+            "clientservices/update",
             {
               _id: this.editedItem._id,
               name: this.editedItem.name,
+              description: this.editedItem.description,
               price: this.editedItem.price,
+              serviceType: this.editedItem.serviceType,
             },
             configuration
           )
-          .then(function () {
+          .then(function (response) {
             me.initialize();
             me.$store.dispatch("setSnackbar", {
-              text: `Se actualizó correctamente el gasto.`,
+              text: `Se actualizó correctamente el servicio.`,
             });
           })
           .catch(function (error) {
@@ -247,17 +275,19 @@ export default {
         let configuration = { headers: header };
         axios
           .post(
-            "expenses/add",
+            "clientservices/add",
             {
               name: this.editedItem.name,
+              description: this.editedItem.description,
               price: this.editedItem.price,
+              serviceType: this.editedItem.serviceType,
             },
             configuration
           )
           .then(function (response) {
             me.initialize();
             me.$store.dispatch("setSnackbar", {
-              text: `Se agregó correctamente el gasto.`,
+              text: `Se agregó correctamente el servicio.`,
             });
           })
           .catch(function (error) {
@@ -271,9 +301,9 @@ export default {
       let header = { token: this.$store.state.token };
       let configuration = { headers: header };
       axios
-        .get("expenses", configuration)
+        .get("clientservices", configuration)
         .then(function (response) {
-          me.expenses = response.data;
+          me.services = response.data;
           me.loadingData = false;
         })
         .catch(function (error) {
@@ -283,7 +313,7 @@ export default {
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "Nuevo gasto" : "Editar gasto";
+      return this.editedIndex === -1 ? "Nuevo servicio" : "Editar servicio";
     },
   },
   created() {

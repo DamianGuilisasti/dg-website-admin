@@ -387,7 +387,7 @@ export default {
     getSettings() {
       let me = this;
       axios
-        .get("settings/list")
+        .get("settings")
         .then(function (response) {
           me.aboutInfo = response.data[0].aboutInfo;
           me.companyName = response.data[0].companyName;
@@ -456,7 +456,7 @@ export default {
       let me = this;
 
       axios
-        .get("settings/list")
+        .get("settings")
         .then(function (response) {
           me.companyImg = response.data[0].companyImg.imageURL;
         })
@@ -467,7 +467,7 @@ export default {
     updateNewLogo() {
       let me = this;
       axios
-        .get("settings/list")
+        .get("settings")
         .then(function (response) {
           me.imageURL = response.data[0].logoURL.imageURL;
         })

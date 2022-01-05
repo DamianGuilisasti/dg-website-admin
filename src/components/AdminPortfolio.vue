@@ -61,11 +61,25 @@
                         <v-text-field
                           v-model="editedItem.name"
                           label="Nombre"
+                          required
+                        ></v-text-field>
+                        <v-text-field
+                          v-if="editedIndex != -1"
+                          v-model="editedItem.slug"
+                          label="URL Slug"
+                          required
                         ></v-text-field>
                         <v-textarea
                           v-model="editedItem.description"
                           label="Descripción"
                         ></v-textarea>
+                        <v-select
+                          label="Seleccione categoría"
+                          v-model="editedItem.category"
+                          :items="categoryList"
+                          item-text="name"
+                          item-value="_id"
+                        ></v-select>
                         <v-text-field
                           v-model="editedItem.problem"
                           label="Problema"
@@ -75,11 +89,7 @@
                           label="Solución"
                         ></v-text-field>
                         <v-text-field
-                          v-model="editedItem.projectType"
-                          label="Tipo de proyecto"
-                        ></v-text-field>
-                        <v-text-field
-                          v-model="editedItem.projectLink"
+                          v-model="editedItem.link"
                           label="Link del proyecto"
                         ></v-text-field>
                       </v-col>
@@ -129,7 +139,8 @@
                                 name="images"
                               ></v-file-input>
                             </v-col>
-                            <v-col v-if="uploadedImages.length >= 1">
+
+                            <v-col cols="12" v-if="uploadedImages.length >= 1">
                               <draggable
                                 :list="uploadedImages"
                                 ghost-class="ghost"
@@ -159,13 +170,16 @@
                                   v-if="uploadingImages"
                                   class="skeleton"
                                   width="200"
-                                  height="120"
+                                  height="130"
                                   type="image"
                                 ></v-skeleton-loader>
                               </draggable>
                             </v-col>
 
-                            <v-col v-if="editedItem.portfolioimages">
+                            <v-col
+                              v-if="editedItem.portfolioimages"
+                              class="portfolioImages"
+                            >
                               <draggable
                                 :list="editedItem.portfolioimages"
                                 ghost-class="ghost"
@@ -173,9 +187,8 @@
                                 @end="dragging = false"
                               >
                                 <div
-                                  v-for="(
-                                    image, index
-                                  ) in editedItem.portfolioimages"
+                                  v-for="(image,
+                                  index) in editedItem.portfolioimages"
                                   :key="index"
                                   class="image-preview"
                                   id="imagePreview"
@@ -197,7 +210,7 @@
                                   v-if="uploadingEditedArrayImages"
                                   class="skeleton"
                                   width="200"
-                                  height="120"
+                                  height="125"
                                   type="image"
                                 ></v-skeleton-loader>
                               </draggable>
@@ -264,6 +277,7 @@ export default {
     draggable,
   },
   data: () => ({
+    categoryList: [],
     imageEditedUploaded: [],
     deletedImagesPublicID: [],
     uploadedImages: [],
@@ -285,6 +299,7 @@ export default {
       portfolioimages: [],
       problem: "",
       solution: "",
+      category: [],
     },
     defaultItem: {
       client: "",
@@ -294,6 +309,7 @@ export default {
       portfolioimages: [],
       problem: "",
       solution: "",
+      category: [],
     },
     search: "",
     headers: [
@@ -304,9 +320,9 @@ export default {
         value: "client",
       },
       {
-        text: "Tipo de proyecto",
+        text: "Categoría",
         filterable: true,
-        value: `projectType`,
+        value: `category.name`,
       },
       {
         text: "Slug",
@@ -317,6 +333,17 @@ export default {
     ],
   }),
   methods: {
+    getCategories() {
+      let me = this;
+      axios
+        .get("portfoliocategories")
+        .then(function(response) {
+          me.categoryList = response.data;
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
     inputClick() {
       document
         .getElementsByClassName("inpFile")[0]
@@ -341,19 +368,19 @@ export default {
       let configuration = { headers: header };
       axios
         .put(
-          "portfolio/desactivate",
+          "portfolios/desactivate",
           {
             _id: item._id,
           },
           configuration
         )
-        .then(function () {
+        .then(function() {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
             text: `Se desactivó correctamente el portfolio.`,
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
@@ -364,26 +391,26 @@ export default {
       let configuration = { headers: header };
       axios
         .put(
-          "portfolio/activate",
+          "portfolios/activate",
           {
             _id: item._id,
           },
           configuration
         )
-        .then(function () {
+        .then(function() {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
             text: `Se activó correctamente el portfolio.`,
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
 
     deleteSavedImages(index) {
       let me = this;
-      this.uploadedImages.map(function (i) {
+      this.uploadedImages.map(function(i) {
         if (i.index == index) {
           me.deletedImagesPublicID.push(i.public_id);
         }
@@ -392,7 +419,7 @@ export default {
     },
     deletePortfolioImages(index) {
       let me = this;
-      this.editedItem.portfolioimages.map(function (i) {
+      this.editedItem.portfolioimages.map(function(i) {
         if (i.index == index) {
           me.deletedImagesPublicID.push(i.public_id);
         }
@@ -411,19 +438,19 @@ export default {
       let portfolioId = item._id;
       confirm("Estás a punto de eliminar el portfolio ¿Continuar?") &&
         axios
-          .delete("portfolio/delete", {
+          .delete("portfolios", {
             params: { id: portfolioId },
             headers: {
               token: me.$store.state.token,
             },
           })
-          .then(function () {
+          .then(function() {
             me.initialize();
             me.$store.dispatch("setSnackbar", {
               text: `Se eliminó correctamente el portfolio.`,
             });
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.log(error);
           });
     },
@@ -448,7 +475,7 @@ export default {
         me.$store.dispatch("setLoadingOverlay");
 
         if (me.editedItem.portfolioimages.length >= 1) {
-          me.editedItem.portfolioimages.map(function (i, index) {
+          me.editedItem.portfolioimages.map(function(i, index) {
             uploadedImagesOrdered.push({
               public_id: i.public_id,
               url: i.url,
@@ -461,34 +488,36 @@ export default {
 
         axios
           .put(
-            "portfolio/update",
+            "portfolios",
             {
               _id: this.editedItem._id,
               client: this.editedItem.client._id,
               name: this.editedItem.name,
+              slug: this.editedItem.slug,
               description: this.editedItem.description || "",
               problem: this.editedItem.problem || "",
               solution: this.editedItem.solution || "",
-              projectType: this.editedItem.projectType || "",
-              projectLink: this.editedItem.projectLink || "",
+              category: this.editedItem.category || "",
+              link: this.editedItem.link || "",
               clientReview: this.editedItem.clientReview || "",
               portfolioimages: JSON.stringify(uploadedImagesOrdered) || "",
               deletedImagesPublicID: this.deletedImagesPublicID || "",
             },
             configuration
           )
-          .then(function () {
+          .then(function() {
             me.initialize();
             me.$store.dispatch("removeLoadingOverlay");
             me.$store.dispatch("setSnackbar", {
               text: "Se actualizó correctamente el Portfolio.",
             });
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.log(error);
             me.$store.dispatch("removeLoadingOverlay");
             me.$store.dispatch("setSnackbar", {
-              text: "Hubo un error al actualizar el Portfolio, por favor actualice la página e intente nuevamente.",
+              text:
+                "Hubo un error al actualizar el Portfolio, por favor actualice la página e intente nuevamente.",
               color: "error",
             });
           });
@@ -498,7 +527,7 @@ export default {
         me.$store.dispatch("setLoadingOverlay");
 
         if (me.uploadedImages.length >= 1) {
-          me.uploadedImages.map(function (i, index) {
+          me.uploadedImages.map(function(i, index) {
             uploadedImagesOrdered.push({
               public_id: i.public_id,
               url: i.url,
@@ -509,33 +538,34 @@ export default {
 
         axios
           .post(
-            "portfolio/add",
+            "portfolios",
             {
               client: this.editedItem.client._id,
               name: this.editedItem.name,
               description: this.editedItem.description || "",
               problem: this.editedItem.problem || "",
               solution: this.editedItem.solution || "",
-              projectType: this.editedItem.projectType || "",
-              projectLink: this.editedItem.projectLink || "",
+              category: this.editedItem.category || "",
+              link: this.editedItem.link || "",
               clientReview: this.editedItem.clientReview || "",
               portfolioimages: JSON.stringify(uploadedImagesOrdered) || "",
               deletedImagesPublicID: this.deletedImagesPublicID || "",
             },
             configuration
           )
-          .then(function () {
+          .then(function() {
             me.initialize();
             me.$store.dispatch("removeLoadingOverlay");
             me.$store.dispatch("setSnackbar", {
               text: "Se agregó correctamente el Portfolio.",
             });
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.log(error);
             me.$store.dispatch("removeLoadingOverlay");
             me.$store.dispatch("setSnackbar", {
-              text: "Hubo un error al agregar el Portfolio, por favor actualice la página e intente nuevamente.",
+              text:
+                "Hubo un error al agregar el Portfolio, por favor actualice la página e intente nuevamente.",
               color: "error",
             });
           });
@@ -549,8 +579,8 @@ export default {
       this.editedItem.description = "";
       this.editedItem.problem = "";
       this.editedItem.solution = "";
-      this.editedItem.projectType = "";
-      this.editedItem.projectLink = "";
+      this.editedItem.category = "";
+      this.editedItem.link = "";
       this.editedItem.clientReview = "";
       this.uploadedImages = "";
       this.deletedImagesPublicID = [];
@@ -558,12 +588,13 @@ export default {
     initialize() {
       let me = this;
       axios
-        .get("portfolio/list")
-        .then(function (response) {
+        .get("portfolios")
+        .then(function(response) {
           me.portfolios = response.data;
+          console.log(me.portfolios);
           me.loadingData = false;
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
@@ -572,68 +603,68 @@ export default {
       let header = { token: this.$store.state.token };
       let configuration = { headers: header };
       axios
-        .get("clients/list", configuration)
-        .then(function (response) {
+        .get("clients", configuration)
+        .then(function(response) {
           me.clients = response.data;
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
   },
   watch: {
-    imageEditedUploaded: function () {
+    imageEditedUploaded: function() {
       let me = this;
 
       let formData = new FormData();
       this.portfolioImages = Array.from(event.target.files);
-      this.portfolioImages.map(function (file) {
+      this.portfolioImages.map(function(file) {
         formData.append("images", file);
       });
 
       me.uploadingEditedArrayImages = true;
 
       axios
-        .post("portfolio/uploadimage", formData, {
+        .post("portfolios/uploadimage", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             token: me.$store.state.token,
           },
         })
-        .then(function (response) {
+        .then(function(response) {
           me.editedItem.portfolioimages = [
             ...me.editedItem.portfolioimages,
             ...response.data,
           ];
           me.uploadingEditedArrayImages = false;
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
-    imageUploaded: function () {
+    imageUploaded: function() {
       let me = this;
 
       let formData = new FormData();
       this.portfolioImages = Array.from(event.target.files);
-      this.portfolioImages.map(function (file) {
+      this.portfolioImages.map(function(file) {
         formData.append("images", file);
       });
 
       me.uploadingImages = true;
 
       axios
-        .post("portfolio/uploadimage", formData, {
+        .post("portfolios/uploadimage", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             token: me.$store.state.token,
           },
         })
-        .then(function (response) {
+        .then(function(response) {
           me.uploadedImages = [...me.uploadedImages, ...response.data];
           me.uploadingImages = false;
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
@@ -646,6 +677,7 @@ export default {
   created() {
     this.initialize();
     this.getClients();
+    this.getCategories();
   },
 };
 </script>
@@ -695,7 +727,8 @@ export default {
   border: 3px solid #fff;
   margin-bottom: 20px;
 }
+
+.portfolioImages div {
+  display: flex;
+}
 </style>
-
-
-

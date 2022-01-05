@@ -16,6 +16,30 @@
           </v-chip>
         </template>
 
+        <template v-slot:item.clientReview="{ item }">
+          <v-chip :color="getReviewColor(item.clientReview)" dark>
+            {{ getClientReview(item.clientReview) }}
+          </v-chip>
+        </template>
+
+        <template v-slot:item.shortdescription="{ item }">
+          <v-chip :color="getShortDescriptionColor(item.shortdescription)" dark>
+            {{ getShortDescription(item.shortdescription) }}
+          </v-chip>
+        </template>
+
+        <template v-slot:item.description="{ item }">
+          <v-chip :color="getDescriptionColor(item.description)" dark>
+            {{ getDescription(item.description) }}
+          </v-chip>
+        </template>
+
+        <template v-slot:item.servicesimages="{ item }">
+          <v-chip :color="getServicesImagesColor(item.servicesimages)" dark>
+            {{ getServicesImages(item.servicesimages) }}
+          </v-chip>
+        </template>
+
         <template v-slot:top>
           <v-toolbar flat color="dark">
             <v-card-title>
@@ -28,7 +52,7 @@
               ></v-text-field>
             </v-card-title>
             <v-spacer></v-spacer>
-            <v-dialog v-model="dialog" max-width="500px">
+            <v-dialog v-model="dialog" min-width="100%">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
                   color="primary"
@@ -43,40 +67,155 @@
                 <v-card-title>
                   <span class="headline">{{ formTitle }}</span>
                 </v-card-title>
-
                 <v-card-text>
-                  <v-container>
-                    <v-row align="center" justify="space-around">
-                      <v-col cols="12">
-                        <v-text-field
-                          v-model="editedItem.name"
-                          label="Nombre"
-                        ></v-text-field>
-                      </v-col>
+                  <v-row align="center" justify="space-around">
+                    <v-col cols="12">
+                      <v-text-field
+                        v-model="editedItem.name"
+                        label="Nombre"
+                      ></v-text-field>
+                      <v-text-field
+                        v-if="editedIndex != -1"
+                        v-model="editedItem.slug"
+                        label="URL Slug"
+                      ></v-text-field>
+                      <v-text-field
+                        v-model="editedItem.shortdescription"
+                        label="Descripción corta"
+                      ></v-text-field>
+                      <v-textarea
+                        v-model="editedItem.clientReview"
+                        label="Reseña del cliente"
+                      ></v-textarea>
+                      <v-text-field
+                        v-model="editedItem.projectExample"
+                        label="Proyecto de ejemplo"
+                      ></v-text-field>
+                      <p class="mb-3">Descripción larga:</p>
+                      <vue-editor
+                        class="mb-5"
+                        v-model="editedItem.description"
+                      />
+                    </v-col>
 
-                      <v-col cols="12">
-                        <v-text-field
-                          v-model="editedItem.description"
-                          label="Descripción"
-                        ></v-text-field>
-                      </v-col>
+                    <v-col cols="12">
+                      <p class="mb-3">Imagen de fondo: (Requerido para que se muestre el servicio)</p>
 
-                      <v-col cols="12">
-                        <v-text-field
-                          v-model="editedItem.price"
-                          label="Precio"
-                        ></v-text-field>
-                      </v-col>
+                      <v-row>
+                        <v-col cols="12">
+                          <div class="addNew d-flex" @click="inputClick">
+                            <v-row align="center">
+                              <v-col class="text-center">
+                                <v-icon size="40">mdi-plus</v-icon>
+                                <p>Agregar imagen</p>
+                              </v-col>
+                            </v-row>
+                          </div>
+                          <v-file-input
+                            v-if="editedIndex == -1"
+                            multiple
+                            outlined
+                            dense
+                            v-model="imageUploaded"
+                            color="deep-purple accent-4"
+                            placeholder="Seleccionar imágenes"
+                            prepend-icon="mdi-paperclip"
+                            persistent-hint
+                            class="mb-3 inpFile"
+                            name="images"
+                          ></v-file-input>
+                          <v-file-input
+                            v-if="editedIndex != -1"
+                            multiple
+                            outlined
+                            dense
+                            v-model="imageEditedUploaded"
+                            color="deep-purple accent-4"
+                            placeholder="Seleccionar imágenes"
+                            prepend-icon="mdi-paperclip"
+                            persistent-hint
+                            class="mb-3 inpFile"
+                            name="images"
+                          ></v-file-input>
+                        </v-col>
+                        <v-col v-if="uploadedImages.length >= 1">
+                          <draggable
+                            :list="uploadedImages"
+                            ghost-class="ghost"
+                            @start="dragging = true"
+                            @end="dragging = false"
+                          >
+                            <div
+                              v-for="(image, index) in uploadedImages"
+                              :key="index"
+                              class="image-preview"
+                              id="imagePreview"
+                            >
+                              <v-img
+                                :src="image.url"
+                                height="120px"
+                                width="auto"
+                                alt="Image Preview"
+                              >
+                                <span
+                                  class="removeButton"
+                                  @click="deleteSavedImages(index)"
+                                  >X</span
+                                ></v-img
+                              >
+                            </div>
+                            <v-skeleton-loader
+                              v-if="uploadingImages"
+                              class="skeleton"
+                              width="200"
+                              height="120"
+                              type="image"
+                            ></v-skeleton-loader>
+                          </draggable>
+                        </v-col>
 
-                      <v-col cols="12">
-                        <v-select
-                          label="Tipo de servicio"
-                          v-model="editedItem.serviceType"
-                          :items="servicesType"
-                        ></v-select>
-                      </v-col>
-                    </v-row>
-                  </v-container>
+                        <v-col
+                          v-if="editedItem.servicesimages"
+                          class="servicesImages"
+                        >
+                          <draggable
+                            :list="editedItem.servicesimages"
+                            ghost-class="ghost"
+                            @start="dragging = true"
+                            @end="dragging = false"
+                          >
+                            <div
+                              v-for="(image,
+                              index) in editedItem.servicesimages"
+                              :key="index"
+                              class="image-preview"
+                              id="imagePreview"
+                            >
+                              <v-img
+                                :src="image.url"
+                                height="120px"
+                                width="auto"
+                                alt="Image Preview"
+                              >
+                                <span
+                                  class="removeButton"
+                                  @click="deleteservicesimages(index)"
+                                  >X</span
+                                ></v-img
+                              >
+                            </div>
+                            <v-skeleton-loader
+                              v-if="uploadingEditedArrayImages"
+                              class="skeleton"
+                              width="200"
+                              height="120"
+                              type="image"
+                            ></v-skeleton-loader>
+                          </draggable>
+                        </v-col>
+                      </v-row>
+                    </v-col>
+                  </v-row>
                 </v-card-text>
 
                 <v-card-actions>
@@ -113,15 +252,49 @@
 
 <script>
 import axios from "axios";
+import { VueEditor } from "vue2-editor";
+import draggable from "vuedraggable";
+import VueUploadMultipleImage from "vue-upload-multiple-image";
 export default {
+  inject: {
+    theme: {
+      default: { isDark: false },
+    },
+  },
+  components: {
+    VueUploadMultipleImage,
+    draggable,
+    VueEditor,
+  },
   data: () => ({
-    servicesType: ["Fijo", "Mensual", "Anual"],
+    imageEditedUploaded: [],
+    deletedImagesPublicID: [],
+    uploadedImages: [],
+    services: [],
+    servicesImages: "",
+    uploadingImages: false,
+    uploadingEditedArrayImages: false,
+    dragging: false,
+    imageUploaded: null,
     loadingData: true,
     dialog: false,
     editedIndex: -1,
     editedItem: {
       name: "",
-      price: "",
+      clientReview: "",
+      shortdescription: "",
+      description: "",
+      servicesimages: [],
+    },
+    defaultItem: {
+      client: "",
+      name: "",
+      clientReview: "",
+      shortdescription: "",
+      description: "",
+      servicesimages: [],
+      problem: "",
+      solution: "",
     },
     search: "",
     headers: [
@@ -132,26 +305,42 @@ export default {
         value: "name",
       },
       {
-        text: "Descripción",
+        text: "Slug",
+        value: "slug",
+      },
+      {
+        text: "Descripción corta",
+        value: "shortdescription",
+      },
+      {
+        text: "Descripción larga",
         value: "description",
       },
       {
-        text: "Tipo de servicio",
-        value: "serviceType",
+        text: "Reseñas",
+        filterable: true,
+        value: "clientReview",
       },
       {
-        text: "Precio",
+        text: "Imágen de fondo",
         filterable: true,
-        value: "price",
+        value: "servicesimages",
       },
+
       { text: "Estado", filterable: true, value: "state" },
       { text: "Acciones", value: "actions" },
     ],
-    services: [],
   }),
   methods: {
-    //DataTable
-
+    inputClick() {
+      document
+        .getElementsByClassName("inpFile")[0]
+        .querySelector("button")
+        .click();
+    },
+    clientName(item) {
+      return item.client.name + " " + item.client.lastname;
+    },
     getStateColor(state) {
       if (state === 1) return "green";
       else return "red";
@@ -159,6 +348,45 @@ export default {
     getState(state) {
       if (state === 1) return "Activo";
       else return "Desactivado";
+    },
+    getClientReview(review) {
+      if (review.length > 0) return "✔";
+      else return "✖";
+    },
+
+    getReviewColor(review) {
+      if (review.length > 0) return "green";
+      else return "red";
+    },
+
+    getShortDescription(shortdescription) {
+      if (shortdescription.length > 0) return "✔";
+      else return "✖";
+    },
+
+    getShortDescriptionColor(shortdescription) {
+      if (shortdescription.length > 0) return "green";
+      else return "red";
+    },
+
+    getDescription(description) {
+      if (description.length > 0) return "✔";
+      else return "✖";
+    },
+
+    getDescriptionColor(description) {
+      if (description.length > 0) return "green";
+      else return "red";
+    },
+
+    getServicesImages(servicesimages) {
+      if (servicesimages.length > 0) return "✔";
+      else return "✖";
+    },
+
+    getServicesImagesColor(servicesimages) {
+      if (servicesimages.length > 0) return "green";
+      else return "red";
     },
 
     desactivateItem(item) {
@@ -173,13 +401,13 @@ export default {
           },
           configuration
         )
-        .then(function (response) {
+        .then(function() {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
             text: `Se desactivó correctamente el servicio.`,
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
@@ -196,15 +424,34 @@ export default {
           },
           configuration
         )
-        .then(function (response) {
+        .then(function() {
           me.initialize();
           me.$store.dispatch("setSnackbar", {
             text: `Se activó correctamente el servicio.`,
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
+    },
+
+    deleteSavedImages(index) {
+      let me = this;
+      this.uploadedImages.map(function(i) {
+        if (i.index == index) {
+          me.deletedImagesPublicID.push(i.public_id);
+        }
+      });
+      this.uploadedImages.splice(index, 1);
+    },
+    deleteservicesimages(index) {
+      let me = this;
+      this.editedItem.servicesimages.map(function(i) {
+        if (i.index == index) {
+          me.deletedImagesPublicID.push(i.public_id);
+        }
+      });
+      this.editedItem.servicesimages.splice(index, 1);
     },
 
     editItem(item) {
@@ -218,24 +465,25 @@ export default {
       let serviceId = item._id;
       confirm("Estás a punto de eliminar el servicio ¿Continuar?") &&
         axios
-          .delete("services/delete", {
+          .delete("services", {
             params: { id: serviceId },
             headers: {
               token: me.$store.state.token,
             },
           })
-          .then(function (response) {
+          .then(function() {
             me.initialize();
             me.$store.dispatch("setSnackbar", {
               text: `Se eliminó correctamente el servicio.`,
             });
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.log(error);
           });
     },
 
     close() {
+      this.initialize();
       this.dialog = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
@@ -247,73 +495,191 @@ export default {
       let me = this;
       let header = { token: this.$store.state.token };
       let configuration = { headers: header };
+
       if (this.editedIndex > -1) {
+        const uploadedImagesOrdered = [];
+
+        me.$store.dispatch("setLoadingOverlay");
+
+        if (me.editedItem.servicesimages.length >= 1) {
+          me.editedItem.servicesimages.map(function(i, index) {
+            uploadedImagesOrdered.push({
+              public_id: i.public_id,
+              url: i.url,
+              index,
+            });
+          });
+        }
+
+        me.$store.dispatch("setLoadingOverlay");
+
         axios
           .put(
-            "services/update",
+            "services",
             {
               _id: this.editedItem._id,
               name: this.editedItem.name,
-              description: this.editedItem.description,
-              price: this.editedItem.price,
-              serviceType: this.editedItem.serviceType,
+              slug: this.editedItem.slug,
+              shortdescription: this.editedItem.shortdescription || "",
+              description: this.editedItem.description || "",
+              projectExample: this.editedItem.projectExample || "",
+              clientReview: this.editedItem.clientReview || "",
+              servicesimages: JSON.stringify(uploadedImagesOrdered) || "",
+              deletedImagesPublicID: this.deletedImagesPublicID || "",
             },
             configuration
           )
-          .then(function (response) {
+          .then(function() {
             me.initialize();
+            me.$store.dispatch("removeLoadingOverlay");
             me.$store.dispatch("setSnackbar", {
-              text: `Se actualizó correctamente el servicio.`,
+              text: "Se actualizó correctamente el Servicio.",
             });
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.log(error);
+            me.$store.dispatch("removeLoadingOverlay");
+            me.$store.dispatch("setSnackbar", {
+              text:
+                "Hubo un error al actualizar el Servicio, por favor actualice la página e intente nuevamente.",
+              color: "error",
+            });
           });
       } else {
-        let me = this;
-        let header = { token: this.$store.state.token };
-        let configuration = { headers: header };
+        const uploadedImagesOrdered = [];
+
+        me.$store.dispatch("setLoadingOverlay");
+
+        if (me.uploadedImages.length >= 1) {
+          me.uploadedImages.map(function(i, index) {
+            uploadedImagesOrdered.push({
+              public_id: i.public_id,
+              url: i.url,
+              index,
+            });
+          });
+        }
+
         axios
           .post(
-            "services/add",
+            "services",
             {
               name: this.editedItem.name,
-              description: this.editedItem.description,
-              price: this.editedItem.price,
-              serviceType: this.editedItem.serviceType,
+              shortdescription: this.editedItem.shortdescription || "",
+              description: this.editedItem.description || "",
+              projectExample: this.editedItem.projectExample || "",
+              clientReview: this.editedItem.clientReview || "",
+              servicesimages: JSON.stringify(uploadedImagesOrdered) || "",
+              deletedImagesPublicID: this.deletedImagesPublicID || "",
             },
             configuration
           )
-          .then(function (response) {
+          .then(function() {
             me.initialize();
+            me.$store.dispatch("removeLoadingOverlay");
             me.$store.dispatch("setSnackbar", {
-              text: `Se agregó correctamente el servicio.`,
+              text: "Se agregó correctamente el Servicio.",
             });
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.log(error);
+            me.$store.dispatch("removeLoadingOverlay");
+            me.$store.dispatch("setSnackbar", {
+              text:
+                "Hubo un error al agregar el Servicio, por favor actualice la página e intente nuevamente.",
+              color: "error",
+            });
           });
       }
+      this.cleanForm();
       this.close();
+    },
+    cleanForm() {
+      this.editedItem.client = "";
+      this.editedItem.name = "";
+      this.editedItem.shortdescription = "";
+      this.editedItem.description = "";
+      this.editedItem.problem = "";
+      this.editedItem.solution = "";
+      this.editedItem.category = "";
+      this.editedItem.link = "";
+      this.editedItem.clientReview = "";
+      this.uploadedImages = "";
+      this.deletedImagesPublicID = [];
     },
     initialize() {
       let me = this;
-      let header = { token: this.$store.state.token };
-      let configuration = { headers: header };
       axios
-        .get("services/list", configuration)
-        .then(function (response) {
+        .get("services")
+        .then(function(response) {
           me.services = response.data;
           me.loadingData = false;
         })
-        .catch(function (error) {
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+  },
+  watch: {
+    imageEditedUploaded: function() {
+      let me = this;
+
+      let formData = new FormData();
+      this.servicesImages = Array.from(event.target.files);
+      this.servicesImages.map(function(file) {
+        formData.append("images", file);
+      });
+
+      me.uploadingEditedArrayImages = true;
+
+      axios
+        .post("services/uploadimage", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            token: me.$store.state.token,
+          },
+        })
+        .then(function(response) {
+          me.editedItem.servicesimages = [
+            ...me.editedItem.servicesimages,
+            ...response.data,
+          ];
+          me.uploadingEditedArrayImages = false;
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    imageUploaded: function() {
+      let me = this;
+
+      let formData = new FormData();
+      this.servicesImages = Array.from(event.target.files);
+      this.servicesImages.map(function(file) {
+        formData.append("images", file);
+      });
+
+      me.uploadingImages = true;
+
+      axios
+        .post("services/uploadimage", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            token: me.$store.state.token,
+          },
+        })
+        .then(function(response) {
+          me.uploadedImages = [...me.uploadedImages, ...response.data];
+          me.uploadingImages = false;
+        })
+        .catch(function(error) {
           console.log(error);
         });
     },
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "Nuevo servicio" : "Editar servicio";
+      return this.editedIndex === -1 ? "Nuevo Servicio" : "Editar Servicio";
     },
   },
   created() {
@@ -322,9 +688,53 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+.addNew {
+  margin-bottom: 10px;
+  border-style: dashed !important;
+  width: 200px;
+  height: 120px;
+  cursor: pointer;
+  display: inline-flex !important;
+  float: left;
+}
+.removeButton {
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  color: red;
+  font-size: 25px;
+  cursor: pointer;
+}
+.logoImg {
+  margin-bottom: 20px;
+}
+.image-preview {
+  display: inline-grid !important;
+  height: 120px;
+  max-width: 200px;
+  border: 3px solid #fff;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #ccc;
+}
+.image_preview__image {
+  display: block;
+  width: 100%;
+}
+.inpFile {
+  display: none;
+}
+.skeleton {
+  display: inline-grid !important;
+  border: 3px solid #fff;
+  margin-bottom: 20px;
+}
+
+.servicesImages div {
+  display: flex;
+}
 </style>
-
-
-

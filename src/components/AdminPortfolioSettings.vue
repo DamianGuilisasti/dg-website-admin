@@ -180,7 +180,7 @@ export default {
       let header = { token: this.$store.state.token };
       let configuration = { headers: header };
       axios
-        .post("sliders/updateIndex", { sliders: this.sliders }, configuration)
+        .post("portfoliosliders/updateIndex", { sliders: this.sliders }, configuration)
         .then(function () {
           me.$store.dispatch("setSnackbar", {
             text: "Se actualizó correctamente el orden de los Sliders.",
@@ -210,7 +210,7 @@ export default {
     getSliders() {
       let me = this;
       axios
-        .get("sliders")
+        .get("portfoliosliders")
         .then(function (response) {
           me.sliders = response.data;
         })
@@ -240,7 +240,7 @@ export default {
       formData.append("image", this.imageFile);
 
       axios
-        .post("sliders", formData, {
+        .post("portfoliosliders", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             token: me.$store.state.token,
@@ -279,7 +279,7 @@ export default {
       }
 
       axios
-        .put("sliders", formData, {
+        .put("portfoliosliders", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             token: me.$store.state.token,

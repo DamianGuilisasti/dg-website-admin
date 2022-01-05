@@ -5,6 +5,7 @@ import Admin from "../views/Admin";
 import Dashboard from "../components/Dashboard";
 import Login from "../views/Login";
 import AdminSettings from "../components/AdminSettings";
+import AdminClientsServices from "../components/AdminClientsServices";
 import AdminServices from "../components/AdminServices";
 import AdminClients from "../components/AdminClients";
 import BlogAdmin from "../components/BlogAdmin";
@@ -16,9 +17,11 @@ import AdminEditAccount from "../components/AdminEditAccount";
 import ErrorPath from "../views/404";
 import ResetPassword from "../views/ResetPassword";
 import AdminSliderSettings from "../components/AdminSliderSettings";
+import AdminPortfolioSettings from "../components/AdminPortfolioSettings";
 import AdminClientsImages from "../components/AdminClientsImages";
 import AdminColors from "../components/AdminColors";
-import AdminPortfolio from "../components/AdminPortfolio"
+import AdminPortfolio from "../components/AdminPortfolio";
+import AdminPortfolioCategories from "../components/AdminPortfolioCategories";
 
 import store from "../store";
 
@@ -64,12 +67,17 @@ const routes = [
         name: "BlogAdmin",
       },
       {
-        path: "Services",
+        path: "clients-services",
+        component: AdminClientsServices,
+        name: "AdminClientsServices",
+      },
+      {
+        path: "services",
         component: AdminServices,
         name: "AdminServices",
       },
       {
-        path: "Portfolio",
+        path: "portfolios/list",
         component: AdminPortfolio,
         name: "AdminPortfolio",
       },
@@ -104,10 +112,21 @@ const routes = [
         name: "AdminSettings",
       },
       {
-        path: "settings/slider",
+        path: "settings/sliderHome",
         component: AdminSliderSettings,
         name: "AdminSliderSettings",
       },
+      {
+        path: "portfolios/slider",
+        component: AdminPortfolioSettings,
+        name: "AdminPortfolioSettings",
+      },
+      {
+        path: "portfolios/categories",
+        component: AdminPortfolioCategories,
+        name: "AdminPortfolioCategories",
+      },
+
       {
         path: "settings/clientslogo",
         component: AdminClientsImages,

@@ -18,11 +18,11 @@ Vue.use(VueScrollactive);
 
 /* if (process.env.NODE_ENV == "development") {
   axios.defaults.baseURL = "http://localhost:4000/api";
-} else { */
+} else {
   axios.defaults.baseURL = "/api";
-/* } */
-
-//axios.defaults.baseURL = "http://localhost:4000/api"; //cambiar en producción dejar solo el /api
+}
+ */
+axios.defaults.baseURL = "http://localhost:4000/api"; //en desarrollo
 
 new Vue({
   router,

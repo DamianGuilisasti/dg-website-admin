@@ -7,7 +7,12 @@
             <v-list-item-title class="title">
               {{ companyName }}
             </v-list-item-title>
-            <v-list-item-subtitle> Admin Panel </v-list-item-subtitle>
+            <v-list-item-subtitle
+              color="0027ff
+"
+            >
+              Admin Panel
+            </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
 
@@ -22,30 +27,68 @@
 
         <v-list-item link to="/admin/services" v-if="isAdmin()">
           <v-list-item-action>
-            <v-icon>mdi-laptop</v-icon>
+            <v-icon>mdi-chart-pie</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Servicios</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item link to="/admin/portfolio">
-          <v-list-item-action>
-            <v-icon>mdi-briefcase-outline</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Portafolio</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+        <v-list-group prepend-icon="" no-action>
+          <template v-slot:activator>
+            <v-list-item-action>
+              <v-icon>mdi-account-group-outline</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Clientes</v-list-item-title>
+            </v-list-item-content>
+          </template>
 
-        <v-list-item link to="/admin/clients">
-          <v-list-item-action>
-            <v-icon>mdi-account-group-outline</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Clientes</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+          <v-list-item link to="/admin/clients">
+            <v-list-item-content>
+              <v-list-item-title>Ver Clientes</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-icon>mdi-format-list-bulleted</v-icon>
+            </v-list-item-action>
+          </v-list-item>
+
+          <v-list-item link to="/admin/clients-services" v-if="isAdmin()">
+            <v-list-item-content>
+              <v-list-item-title>Servicios</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-icon>mdi-laptop</v-icon>
+            </v-list-item-action>
+          </v-list-item>
+
+          <v-list-item link to="/admin/budgets">
+            <v-list-item-content>
+              <v-list-item-title>Presupuestos</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-icon>mdi-file-outline</v-icon>
+            </v-list-item-action>
+          </v-list-item>
+
+          <v-list-item link to="/admin/emails">
+            <v-list-item-content>
+              <v-list-item-title>Enviar Factura</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-icon>mdi-email</v-icon>
+            </v-list-item-action>
+          </v-list-item>
+
+          <v-list-item link to="/admin/expenses">
+            <v-list-item-content>
+              <v-list-item-title>Gastos</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-icon>mdi-trending-down</v-icon>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list-group>
 
         <v-list-item link to="/admin/users" v-if="isAdmin()">
           <v-list-item-action>
@@ -56,23 +99,43 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item link to="/admin/budgets">
-          <v-list-item-action>
-            <v-icon>mdi-file-outline</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Presupuestos</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+        <v-list-group prepend-icon="" no-action>
+          <template v-slot:activator>
+            <v-list-item-action>
+              <v-icon>mdi-briefcase-outline</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Portafolio</v-list-item-title>
+            </v-list-item-content>
+          </template>
 
-        <v-list-item link to="/admin/emails">
-          <v-list-item-action>
-            <v-icon>mdi-email</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Enviar Factura por Email</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+          <v-list-item link to="/admin/portfolios/list">
+            <v-list-item-content>
+              <v-list-item-title>Ver Portafolios</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-icon>mdi-briefcase-outline</v-icon>
+            </v-list-item-action>
+          </v-list-item>
+
+          <v-list-item link to="/admin/portfolios/categories">
+            <v-list-item-content>
+              <v-list-item-title>Categorías</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-icon>
+              <v-icon>mdi-format-list-bulleted</v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+
+          <v-list-item link to="/admin/portfolios/slider">
+            <v-list-item-content>
+              <v-list-item-title>Slider Portfolio</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-icon>
+              <v-icon>mdi-image-multiple</v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-group>
 
         <!--         <v-list-item link to="/admin/configuracion/informacion-nosotros">
           <v-list-item-action>
@@ -83,23 +146,51 @@
           </v-list-item-content>
         </v-list-item>
  -->
-        <v-list-item link to="/admin/expenses">
-          <v-list-item-action>
-            <v-icon>mdi-trending-down</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Gastos</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
 
-        <v-list-item link to="/admin/blog">
-          <v-list-item-action>
-            <v-icon>mdi-post-outline</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Publicaciones</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+        <!--         <v-list-group prepend-icon="" no-action>
+          <template v-slot:activator>
+            <v-list-item-action>
+              <v-icon>mdi-post-outline</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Publicaciones</v-list-item-title>
+            </v-list-item-content>
+          </template>
+
+          <v-list-item link to="/admin/blog">
+            <v-list-item-content>
+              <v-list-item-title>Ver Publicaciones</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-icon>mdi-format-list-bulleted</v-icon>
+            </v-list-item-action>
+          </v-list-item>
+
+          <v-list-item link to="/admin/blog/categories">
+            <v-list-item-content>
+              <v-list-item-title>Categorías</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-icon>mdi-format-list-bulleted-type</v-icon>
+            </v-list-item-action>
+          </v-list-item>
+          <v-list-item link to="/admin/blog/authors">
+            <v-list-item-content>
+              <v-list-item-title>Autores</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-icon>mdi-face</v-icon>
+            </v-list-item-action>
+          </v-list-item>
+          <v-list-item link to="/admin/blog/tags">
+            <v-list-item-content>
+              <v-list-item-title>Etiquetas</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-icon>mdi-tag</v-icon>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list-group> -->
 
         <!--         <v-list-item link to="/admin/configuracion/redes-sociales">
           <v-list-item-action>
@@ -129,9 +220,9 @@
             </v-list-item-icon>
           </v-list-item>
 
-          <v-list-item link to="/admin/settings/slider">
+          <v-list-item link to="/admin/settings/sliderHome">
             <v-list-item-content>
-              <v-list-item-title>Slider</v-list-item-title>
+              <v-list-item-title>Slider Home</v-list-item-title>
             </v-list-item-content>
             <v-list-item-icon>
               <v-icon>mdi-image-multiple</v-icon>
@@ -147,14 +238,14 @@
             </v-list-item-icon>
           </v-list-item>
 
-          <v-list-item link to="/admin/settings/colors">
+          <!--           <v-list-item link to="/admin/settings/colors">
             <v-list-item-content>
               <v-list-item-title>Colores</v-list-item-title>
             </v-list-item-content>
             <v-list-item-icon>
               <v-icon>mdi-palette</v-icon>
             </v-list-item-icon>
-          </v-list-item>
+          </v-list-item> -->
         </v-list-group>
 
         <v-divider></v-divider>
@@ -278,21 +369,21 @@ export default {
           },
           configuration
         )
-        .then(function () {})
-        .catch(function (error) {
+        .then(function() {})
+        .catch(function(error) {
           console.log(error);
         });
     },
     getSettings() {
       let me = this;
       axios
-        .get("settings/list")
-        .then(function (response) {
+        .get("settings")
+        .then(function(response) {
           me.companyName = response.data[0].companyName;
           me.dataId = response.data[0]._id;
           me.setCompanyURL();
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
@@ -301,15 +392,15 @@ export default {
       let header = { token: this.$store.state.token };
       let configuration = { headers: header };
       const userId = this.$store.state.userDB;
-      const url = `user/query?_id=${userId}`;
+      const url = `users/user?_id=${userId}`;
       axios
         .get(url, configuration)
-        .then(function (response) {
+        .then(function(response) {
           me.userInfo = response.data;
           me.initials =
             me.userInfo.name.slice(0, 1) + me.userInfo.lastname.slice(0, 1);
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
           me.logout();
         });

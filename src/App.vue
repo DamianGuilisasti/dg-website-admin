@@ -37,7 +37,7 @@ export default {
   methods: {
     getSettings() {
       axios
-        .get("settings/list")
+        .get("settings")
         .then(function (response) {
           if (response.data.length == 0) {
             axios

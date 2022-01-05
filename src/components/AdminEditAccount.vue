@@ -109,12 +109,12 @@ export default {
           },
           configuration
         )
-        .then(function (responde) {
+        .then(function(responde) {
           me.$store.dispatch("setSnackbar", {
             text: `Se actualizó correctamente al usuario.`,
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
             text: `No se pudo actualizar al usuario, por favor actualice la página e intente nuevamente.`,
@@ -125,12 +125,12 @@ export default {
     getRols() {
       let me = this;
       axios
-        .get("roles/list")
-        .then(function (response) {
+        .get("roles")
+        .then(function(response) {
           me.userrolList = response.data;
           me.getRole();
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
@@ -139,23 +139,23 @@ export default {
       let header = { token: this.$store.state.token };
       let configuration = { headers: header };
       const userId = this.$store.state.userDB;
-      const url = `user/query?_id=${userId}`;
+      const url = `users/user?_id=${userId}`;
       axios
         .get(url, configuration)
-        .then(function (response) {
+        .then(function(response) {
           me.userInfo = response.data;
           me.initials =
             me.userInfo.name.slice(0, 1) + me.userInfo.lastname.slice(0, 1);
           me.getRols();
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
     getRole() {
       let me = this;
       const role = this.userInfo.rol[0].name;
-      this.userrolList.map(function (i) {
+      this.userrolList.map(function(i) {
         if (i.name === role) {
           me.role = i.name;
           me.roleId = i._id;
@@ -170,8 +170,4 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
-</style>
-
-
-
+<style scoped lang="scss"></style>

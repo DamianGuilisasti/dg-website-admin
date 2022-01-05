@@ -91,7 +91,7 @@
                           required
                         ></v-text-field>
                       </v-col>
-                      <v-col  cols="12">
+                      <v-col cols="12">
                         <v-select
                           v-if="editedIndex === -1"
                           v-model="role"
@@ -238,7 +238,7 @@ export default {
     getRols() {
       let me = this;
       axios
-        .get("roles/list")
+        .get("roles")
         .then(function (response) {
           me.userrolList = response.data;
         })
@@ -269,7 +269,7 @@ export default {
       let configuration = { headers: header };
       axios
         .put(
-          "user/activate",
+          "users/activate",
           {
             _id: item._id,
           },
@@ -295,7 +295,7 @@ export default {
       let configuration = { headers: header };
       axios
         .put(
-          "user/desactivate",
+          "users/desactivate",
           {
             _id: item._id,
           },
@@ -328,7 +328,7 @@ export default {
       let header = { token: this.$store.state.token };
       let configuration = { headers: header };
       axios
-        .get("user/list", configuration)
+        .get("users/", configuration)
         .then(function (response) {
           me.usersArray = response.data;
         })
@@ -353,7 +353,7 @@ export default {
       let userId = item._id;
       confirm("Estás a punto de eliminar el usuario, ¿Continuar?") &&
         axios
-          .delete("user/remove", {
+          .delete("users", {
             params: { id: userId },
             headers: {
               token: me.$store.state.token,
@@ -399,10 +399,10 @@ export default {
               me.roleId = i._id;
             }
           });
-          
+
           axios
             .put(
-              "user/update",
+              "users",
               {
                 _id: this.editedItem._id,
                 name: this.editedItem.name,
@@ -430,7 +430,7 @@ export default {
         } else {
           axios
             .post(
-              "user/add",
+              "users",
               {
                 name: this.editedItem.name,
                 lastname: this.editedItem.lastname,

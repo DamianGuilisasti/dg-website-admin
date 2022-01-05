@@ -14,7 +14,9 @@
           ></v-skeleton-loader>
         </v-sheet>
         <v-card v-show="loaded" class="statistics" dark elevation="2">
-          <v-card-title class="headline"> {{ monthlyPayment }} </v-card-title>
+          <v-card-title class="headline">
+            {{ Math.round(monthlyPayment + annualPayment) }}
+          </v-card-title>
 
           <v-card-subtitle>Ingreso mensual.</v-card-subtitle>
 
@@ -84,7 +86,7 @@
         </v-sheet>
         <v-card v-show="loaded" class="statistics" dark elevation="2">
           <v-card-title class="headline">
-            {{ monthlyPayment - monthlyExpenses }}
+            {{ Math.round(monthlyPayment + annualPayment - monthlyExpenses) }}
           </v-card-title>
 
           <v-card-subtitle>Ganancia Neta.</v-card-subtitle>
@@ -105,6 +107,7 @@ export default {
     loading: true,
     loaded: false,
     monthlyPayment: 0,
+    annualPayment: 0,
     clientsQuantity: 0,
     monthlyExpenses: 0,
     theme: {
@@ -112,11 +115,11 @@ export default {
     },
   }),
   methods: {
-    initializeClients() {
+    getMonthlyPayments() {
       let me = this;
       let total = 0;
       axios
-        .get("clients/list")
+        .get("clients/getmonthlypayments")
         .then(function (response) {
           me.clientsQuantity = response.data.length;
           response.data.map(function (i) {
@@ -132,13 +135,32 @@ export default {
           console.log(error);
         });
     },
+    getAnnualPayments() {
+      let me = this;
+      let total = 0;
+      axios
+        .get("clients/getannualpayments")
+        .then(function (response) {
+          response.data.map(function (i) {
+            i.services.map(function (u) {
+              total += u.price;
+            });
+          });
+          me.annualPayment = total / 12;
+          me.loaded = true;
+          me.loading = false;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
     initializeExpenses() {
       let me = this;
       let total = 0;
       let header = { token: this.$store.state.token };
       let configuration = { headers: header };
       axios
-        .get("expenses/list", configuration)
+        .get("expenses", configuration)
         .then(function (response) {
           response.data.map(function (i) {
             total += i.price;
@@ -151,7 +173,8 @@ export default {
     },
   },
   created() {
-    this.initializeClients();
+    this.getMonthlyPayments();
+    this.getAnnualPayments();
     this.initializeExpenses();
   },
 };
