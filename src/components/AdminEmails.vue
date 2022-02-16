@@ -46,7 +46,6 @@
   </form>
 </template>
 
-
 <script>
 import { validationMixin } from "vuelidate";
 import { required, maxLength, email } from "vuelidate/lib/validators";
@@ -68,9 +67,7 @@ export default {
   },
 
   data: () => ({
-    subject: `Factura Mes ${moment(new Date()).format(
-      "MM/YYYY"
-    )} - Damián Guilisasti`,
+    subject: `Factura Mes ${moment(new Date()).format("MM/YYYY")}`,
     name: "",
     email: "",
     checkbox: false,
@@ -118,7 +115,7 @@ export default {
   },
 
   watch: {
-    billUploaded: function () {
+    billUploaded: function() {
       this.BillFile = event.target.files[0];
     },
   },
@@ -126,7 +123,7 @@ export default {
   methods: {
     selectClient(_id) {
       let me = this;
-      this.clientsList.map(function (i) {
+      this.clientsList.map(function(i) {
         if (i._id === _id) {
           me.selectedClient = i;
         }
@@ -136,13 +133,13 @@ export default {
       let me = this;
       axios
         .get("/clients")
-        .then(function (response) {
+        .then(function(response) {
           me.clientsList = response.data;
-          me.clientsList.map(function (i) {
+          me.clientsList.map(function(i) {
             me.clients.push({ text: i.lastname, value: i._id });
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
@@ -164,18 +161,19 @@ export default {
             token: me.$store.state.token,
           },
         })
-        .then(function (response) {
+        .then(function(response) {
           me.clear();
           me.$store.dispatch("removeLoadingOverlay");
           me.$store.dispatch("setSnackbar", {
             text: "Se envío correctamente la factura.",
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
           me.$store.dispatch("removeLoadingOverlay");
           me.$store.dispatch("setSnackbar", {
-            text: "Hubo un error al enviar el presupuesto, por favor actualice la página e intente nuevamente.",
+            text:
+              "Hubo un error al enviar el presupuesto, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });

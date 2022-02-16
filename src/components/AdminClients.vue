@@ -591,7 +591,7 @@ export default {
 
         axios
           .put(
-            "clients/update",
+            "clients",
             {
               _id: this.editedItem._id,
               name: this.editedItem.name,
@@ -626,7 +626,7 @@ export default {
         });
         axios
           .post(
-            "clients/add",
+            "clients",
             {
               name: this.editedItem.name,
               lastname: this.editedItem.lastname,

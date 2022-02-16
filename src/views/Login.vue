@@ -1,5 +1,5 @@
 <template>
-  <v-app id="inspire">
+  <v-app>
     <v-main class="main">
       <v-container class="container" fluid>
         <!-- fill-height -->

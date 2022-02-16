@@ -20,8 +20,11 @@ import AdminSliderSettings from "../components/AdminSliderSettings";
 import AdminPortfolioSettings from "../components/AdminPortfolioSettings";
 import AdminClientsImages from "../components/AdminClientsImages";
 import AdminColors from "../components/AdminColors";
-import AdminPortfolio from "../components/AdminPortfolio";
+import AdminReviews from "../components/AdminReviews";
+import AdminPortfolios from "../components/AdminPortfolios";
 import AdminPortfolioCategories from "../components/AdminPortfolioCategories";
+import AdminMenus from "../components/AdminMenus";
+import CallToAction from "../components/AdminCallToAction";
 
 import store from "../store";
 
@@ -78,8 +81,8 @@ const routes = [
       },
       {
         path: "portfolios/list",
-        component: AdminPortfolio,
-        name: "AdminPortfolio",
+        component: AdminPortfolios,
+        name: "AdminPortfolios",
       },
       {
         path: "Clients",
@@ -126,7 +129,11 @@ const routes = [
         component: AdminPortfolioCategories,
         name: "AdminPortfolioCategories",
       },
-
+      {
+        path: "settings/reviews",
+        component: AdminReviews,
+        name: "AdminReviews",
+      },
       {
         path: "settings/clientslogo",
         component: AdminClientsImages,
@@ -141,6 +148,16 @@ const routes = [
         path: "Expenses",
         component: AdminExpenses,
         name: "AdminExpenses",
+      },
+      {
+        path: "settings/menu",
+        component: AdminMenus,
+        name: "AdminMenus",
+      },
+      {
+        path: "settings/calltoaction",
+        component: CallToAction,
+        name: "CallToAction",
       },
     ],
   },

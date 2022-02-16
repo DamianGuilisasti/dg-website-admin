@@ -19,7 +19,7 @@
                     v-model="companyName"
                     outlined
                     persistent-hint
-                    hint="Dejar en vacío para desactivarlo - Esta información se mostrará toda la página."
+                    hint="Dejar en vacío para desactivarlo - Esta información se mostrará en toda la página."
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -31,7 +31,7 @@
                     v-model="companyPhone"
                     outlined
                     persistent-hint
-                    hint="Dejar en vacío para desactivarlo - Esta información se mostrará toda la página."
+                    hint="Dejar en vacío para desactivarlo - Esta información se mostrará en toda la página."
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -43,7 +43,7 @@
                     v-model="companyAddress"
                     outlined
                     persistent-hint
-                    hint="Dejar en vacío para desactivarlo - Esta información se mostrará toda la página."
+                    hint="Dejar en vacío para desactivarlo - Esta información se mostrará en toda la página."
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -55,7 +55,7 @@
                     v-model="companyEmail"
                     outlined
                     persistent-hint
-                    hint="Dejar en vacío para desactivarlo - Esta información se mostrará toda la página."
+                    hint="Dejar en vacío para desactivarlo - Esta información se mostrará en toda la página."
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -69,7 +69,7 @@
 
               <v-row>
                 <v-col>
-                  <v-btn color="success" class="mr-4 mt-4" @click="updateInfo"
+                  <v-btn color="success" class="mr-3 mt-3" @click="updateInfo"
                     >Guardar cambios</v-btn
                   >
                 </v-col>
@@ -129,14 +129,14 @@
                 <v-col>
                   <v-btn
                     color="success"
-                    class="mr-4 mt-4"
+                    class="mr-3 mt-3"
                     @click="updateCompanyImg"
                     >Guardar cambios</v-btn
                   >
                   <v-btn
-                    v-if="imageURL"
+                    v-if="companyImg"
                     color="red--text"
-                    class="mr-4 mt-4"
+                    class="mr-3 mt-3"
                     @click="deleteCompanyImg"
                     >Eliminar imagen</v-btn
                   >
@@ -225,7 +225,7 @@
                 <v-col>
                   <v-btn
                     color="success"
-                    class="mr-4 mt-4"
+                    class="mr-3 mt-3"
                     @click="updateSocialMedia"
                     >Guardar cambios</v-btn
                   >
@@ -270,7 +270,7 @@
                 <v-col>
                   <v-btn
                     color="success"
-                    class="mr-4 mt-4"
+                    class="mr-3 mt-3"
                     @click="updateWhatsapp"
                     >Guardar cambios</v-btn
                   >
@@ -328,13 +328,13 @@
 
               <v-row>
                 <v-col>
-                  <v-btn color="success" class="mr-4 mt-4" @click="updateLogo"
+                  <v-btn color="success" class="mr-3 mt-3" @click="updateLogo"
                     >Guardar cambios</v-btn
                   >
                   <v-btn
                     v-if="imageURL"
                     color="red--text"
-                    class="mr-4 mt-4"
+                    class="mr-3 mt-3"
                     @click="deleteLogo"
                     >Eliminar logo</v-btn
                   >

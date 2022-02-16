@@ -91,7 +91,7 @@
                           required
                         ></v-text-field>
                       </v-col>
-                      <v-col cols="12">
+                      <v-col cols="12" sm="6" md="6">
                         <v-select
                           v-if="editedIndex === -1"
                           v-model="role"

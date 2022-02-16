@@ -46,60 +46,68 @@
         </div>
       </v-col>
     </v-row>
-
-    <v-dialog v-model="dialog" persistent max-width="600px">
-      <v-card>
-        <v-card-title>
-          <span class="headline">Agregar logo</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-file-input
-                  class="mt-5"
-                  label="Logo del cliente"
-                  outlined
-                  dense
-                  :loading="loadingLogo"
-                  v-model="imageUploaded"
-                  color="deep-purple accent-4"
-                  placeholder="Seleccionar imagen"
-                  prepend-icon="mdi-paperclip"
-                  persistent-hint
-                  hint="El logo debe ser de formato PNG o JPG."
-                  :show-size="1000"
-                ></v-file-input>
-                <img
-                  height="100px"
-                  :src="editedItem.sliderImg.url"
-                  v-if="editedItem.sliderImg.url"
-                />
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-btn
-                  v-if="editedItem.sliderImg.url"
-                  color="red--text"
-                  @click="deleteSliderImg"
-                  >Eliminar logo</v-btn
-                >
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="cleanForm()">
-            Cancelar
-          </v-btn>
-          <v-btn color="green darken-1" text @click="uploadLogo()">
-            Guardar
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <v-form ref="form" v-model="valid" lazy-validation>
+      <v-dialog v-model="dialog" persistent max-width="600px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">Agregar logo</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12">
+                  <v-file-input
+                    class="mt-5"
+                    label="Logo del cliente"
+                    outlined
+                    required
+                    :rules="imageRules"
+                    dense
+                    :loading="loadingLogo"
+                    v-model="imageUploaded"
+                    color="deep-purple accent-4"
+                    placeholder="Seleccionar imagen"
+                    prepend-icon="mdi-paperclip"
+                    persistent-hint
+                    hint="El logo debe ser de formato PNG o JPG."
+                    :show-size="1000"
+                  ></v-file-input>
+                  <img
+                    height="100px"
+                    :src="editedItem.sliderImg.url"
+                    v-if="editedItem.sliderImg.url"
+                  />
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-btn
+                    v-if="editedItem.sliderImg.url"
+                    color="red--text"
+                    @click="deleteSliderImg"
+                    >Eliminar logo</v-btn
+                  >
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="cleanForm()">
+              Cancelar
+            </v-btn>
+            <v-btn
+              color="green darken-1"
+              :disabled="!valid"
+              text
+              @click="uploadLogo()"
+            >
+              Guardar
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-form>
   </v-container>
 </template>
 
@@ -111,6 +119,11 @@ export default {
     draggable,
   },
   data: () => ({
+    valid: true,
+    imageRules: [
+      (v) => !!v || "El archivo es requerido",
+      (v) => (v && v.size > 0) || "El archivo es requerido",
+    ],
     newSliderImg: false,
     dialog: false,
     logos: [],
@@ -130,6 +143,9 @@ export default {
   }),
 
   methods: {
+    validate() {
+      return this.$refs.form.validate();
+    },
     checkMove: function(e) {
       this.newOrder = true;
     },
@@ -191,44 +207,45 @@ export default {
         });
     },
     uploadLogo() {
-      if (this.imageFile === "") {
-        return;
+      if (this.validate()) {
+        if (this.imageFile === "") {
+          return;
+        }
+        this.loadingLogo = true;
+        let me = this;
+        let formData = new FormData();
+
+        formData.append("image", this.imageFile);
+
+        axios
+          .post("logos", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              token: me.$store.state.token,
+            },
+          })
+          .then(function() {
+            me.loadingLogo = false;
+            me.$store.dispatch("setSnackbar", {
+              text: "Se subió correctamente el logo.",
+            });
+            me.cleanForm();
+            me.getLogos();
+          })
+          .catch(function(error) {
+            console.log(error);
+            me.$store.dispatch("setSnackbar", {
+              text:
+                "Hubo un error al subir el logo, por favor actualice la página e intente nuevamente.",
+              color: "error",
+            });
+          });
+        this.dialog = false;
       }
-      this.loadingLogo = true;
-      let me = this;
-      let formData = new FormData();
-
-      formData.append("image", this.imageFile);
-
-      axios
-        .post("logos", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            token: me.$store.state.token,
-          },
-        })
-        .then(function(response) {
-          me.loadingLogo = false;
-          me.$store.dispatch("setSnackbar", {
-            text: "Se subió correctamente el logo.",
-          });
-          me.cleanForm();
-          me.getLogos();
-        })
-        .catch(function(error) {
-          console.log(error);
-          me.$store.dispatch("setSnackbar", {
-            text:
-              "Hubo un error al subir el logo, por favor actualice la página e intente nuevamente.",
-            color: "error",
-          });
-        });
-      this.dialog = false;
     },
     cleanForm() {
       (this.imageFile = ""),
         (this.imageUploaded = null),
-        //(this.editedItem.imageURL = ""),
         (this.loadingLogo = false),
         (this.editedItem.title = ""),
         (this.editedItem.subtitle = "");
@@ -265,7 +282,7 @@ export default {
   position: absolute;
   top: 10px;
   left: 15px;
-  color: red;
+  color: "red";
   font-size: 25px;
 }
 .logoImg .v-image__image .v-image__image--cover :hover {

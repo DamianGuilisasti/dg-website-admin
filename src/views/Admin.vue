@@ -1,5 +1,5 @@
 <template>
-  <v-app id="inspire">
+  <v-app>
     <v-navigation-drawer v-model="drawer" app>
       <v-list dense nav>
         <v-list-item>
@@ -71,14 +71,14 @@
             </v-list-item-action>
           </v-list-item>
 
-          <v-list-item link to="/admin/emails">
+          <!--           <v-list-item link to="/admin/emails">
             <v-list-item-content>
               <v-list-item-title>Enviar Factura</v-list-item-title>
             </v-list-item-content>
             <v-list-item-action>
               <v-icon>mdi-email</v-icon>
             </v-list-item-action>
-          </v-list-item>
+          </v-list-item> -->
 
           <v-list-item link to="/admin/expenses">
             <v-list-item-content>
@@ -220,6 +220,15 @@
             </v-list-item-icon>
           </v-list-item>
 
+          <v-list-item link to="/admin/settings/menu">
+            <v-list-item-content>
+              <v-list-item-title>Menu</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-icon>
+              <v-icon>mdi-menu</v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+
           <v-list-item link to="/admin/settings/sliderHome">
             <v-list-item-content>
               <v-list-item-title>Slider Home</v-list-item-title>
@@ -229,12 +238,30 @@
             </v-list-item-icon>
           </v-list-item>
 
+          <v-list-item link to="/admin/settings/calltoaction">
+            <v-list-item-content>
+              <v-list-item-title>Call to Action</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-icon>
+              <v-icon>mdi-gesture-tap-button</v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+
           <v-list-item link to="/admin/settings/clientslogo">
             <v-list-item-content>
               <v-list-item-title>Clientes</v-list-item-title>
             </v-list-item-content>
             <v-list-item-icon>
               <v-icon>mdi-account-group</v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+
+          <v-list-item link to="/admin/settings/reviews">
+            <v-list-item-content>
+              <v-list-item-title>Reseñas</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-icon>
+              <v-icon>mdi-card-text-outline</v-icon>
             </v-list-item-icon>
           </v-list-item>
 

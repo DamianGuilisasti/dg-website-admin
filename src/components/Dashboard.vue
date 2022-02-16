@@ -1,5 +1,10 @@
 <template>
   <div>
+    <v-row>
+      <v-col cols="12">
+        <h1>{{ greet() }}</h1>
+      </v-col>
+    </v-row>
     <v-row dense>
       <v-col cols="12" md="3" sm="3">
         <v-sheet
@@ -115,15 +120,32 @@ export default {
     },
   }),
   methods: {
+    greet() {
+      const date = new Date();
+
+      const currentTime = date.getHours();
+
+      let greet;
+
+      if (currentTime < 12) {
+        greet = "Buenos días";
+      } else if (currentTime < 18) {
+        greet = "Buenas tardes";
+      } else {
+        greet = "Buenas noches";
+      }
+
+      return greet + " " + this.$store.state.name;
+    },
     getMonthlyPayments() {
       let me = this;
       let total = 0;
       axios
         .get("clients/getmonthlypayments")
-        .then(function (response) {
+        .then(function(response) {
           me.clientsQuantity = response.data.length;
-          response.data.map(function (i) {
-            i.services.map(function (u) {
+          response.data.map(function(i) {
+            i.services.map(function(u) {
               total += u.price;
             });
           });
@@ -131,7 +153,7 @@ export default {
           me.loaded = true;
           me.loading = false;
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
@@ -140,9 +162,9 @@ export default {
       let total = 0;
       axios
         .get("clients/getannualpayments")
-        .then(function (response) {
-          response.data.map(function (i) {
-            i.services.map(function (u) {
+        .then(function(response) {
+          response.data.map(function(i) {
+            i.services.map(function(u) {
               total += u.price;
             });
           });
@@ -150,7 +172,7 @@ export default {
           me.loaded = true;
           me.loading = false;
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
@@ -161,13 +183,13 @@ export default {
       let configuration = { headers: header };
       axios
         .get("expenses", configuration)
-        .then(function (response) {
-          response.data.map(function (i) {
+        .then(function(response) {
+          response.data.map(function(i) {
             total += i.price;
           });
           me.monthlyExpenses = total;
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
@@ -188,6 +210,3 @@ export default {
   background: $primarycolor !important;
 }
 </style>
-
-
-

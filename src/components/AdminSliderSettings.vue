@@ -61,87 +61,110 @@
       </v-col>
     </v-row>
 
-    <v-dialog v-model="dialog" persistent max-width="600px">
-      <v-card>
-        <v-card-title>
-          <span class="headline">{{ formTitle }}</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  label="Título"
-                  required
-                  v-model="editedItem.title"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  label="Subtítulo"
-                  v-model="editedItem.subtitle"
-                ></v-text-field>
-              </v-col>
+    <v-form ref="form" v-model="valid" lazy-validation>
+      <v-dialog v-model="dialog" persistent max-width="600px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">{{ formTitle }}</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    label="Título"
+                    required
+                    v-model="editedItem.title"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    label="Subtítulo"
+                    v-model="editedItem.subtitle"
+                  ></v-text-field>
+                </v-col>
 
-              <v-col cols="12">
-                <v-text-field
-                  label="Texto del Botón"
-                  v-model="editedItem.buttonText"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  label="URL del Botón"
-                  v-model="editedItem.buttonURL"
-                ></v-text-field>
-              </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    label="Texto del Botón"
+                    v-model="editedItem.buttonText"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    label="URL del Botón"
+                    v-model="editedItem.buttonURL"
+                  ></v-text-field>
+                </v-col>
 
-              <v-col cols="12">
-                <p v-if="editedItem.sliderImg.url" class="mb-5">
-                  Imagen del Slider
-                </p>
-                <v-file-input
-                  label="Imagen para Slider"
-                  outlined
-                  dense
-                  :loading="loadingLogo"
-                  v-if="!editedItem.sliderImg.url"
-                  v-model="imageUploaded"
-                  color="deep-purple accent-4"
-                  placeholder="Seleccionar imagen"
-                  prepend-icon="mdi-paperclip"
-                  persistent-hint
-                  hint="El Slider debe ser de formato PNG o JPG."
-                  :show-size="1000"
-                ></v-file-input>
-                <img
-                  height="100px"
-                  :src="editedItem.sliderImg.url"
-                  v-if="editedItem.sliderImg.url"
-                />
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-btn
-                  v-if="editedItem.sliderImg.url"
-                  color="red--text"
-                  @click="deleteSliderImg"
-                  >Eliminar slider</v-btn
-                >
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="cleanForm()">
-            Cancelar
-          </v-btn>
-          <v-btn color="green darken-1" text @click="save()"> Guardar </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+                <v-col cols="12">
+                  <p v-if="editedItem.sliderImg.url" class="mb-5">
+                    Imagen del Slider
+                  </p>
+                  <v-file-input
+                    label="Imagen para Slider"
+                    outlined
+                    dense
+                    required
+                    :rules="imageRules"
+                    :loading="loadingLogo"
+                    v-if="!editedItem.sliderImg.url"
+                    v-model="imageUploaded"
+                    color="deep-purple accent-4"
+                    placeholder="Seleccionar imagen"
+                    prepend-icon="mdi-paperclip"
+                    persistent-hint
+                    hint="El Slider debe ser de formato PNG o JPG."
+                    :show-size="1000"
+                  ></v-file-input>
+                  <img
+                    height="100px"
+                    :src="editedItem.sliderImg.url"
+                    v-if="editedItem.sliderImg.url"
+                  />
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-btn
+                    v-if="editedItem.sliderImg.url"
+                    color="red--text"
+                    @click="deleteSliderImg"
+                    >Eliminar slider</v-btn
+                  >
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="cleanForm()">
+              Cancelar
+            </v-btn>
+            <v-btn
+              color="green darken-1"
+              :disabled="!valid"
+              text
+              @click="save()"
+            >
+              Guardar
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-form>
+    <!--     <v-row>
+      <v-col cols="3"
+        ><v-slider
+          max="10"
+          min="1"
+          v-model="value"
+          step="1"
+          thumb-label
+          ticks
+        ></v-slider
+      ></v-col>
+    </v-row> -->
   </v-container>
 </template>
 
@@ -156,6 +179,12 @@ export default {
     draggable,
   },
   data: () => ({
+    value: 0,
+    valid: true,
+    imageRules: [
+      (v) => !!v || "El archivo es requerido",
+      (v) => (v && v.size > 0) || "El archivo es requerido",
+    ],
     dragging: false,
     newSliderImg: false,
     dialog: false,
@@ -166,6 +195,8 @@ export default {
     loadingLogo: false,
     title: "",
     subtitle: "",
+    buttonText: "",
+    buttonURL: "",
     editedIndex: -1,
     editedItem: {
       title: "",
@@ -175,27 +206,31 @@ export default {
     newOrder: false,
   }),
   methods: {
+    validate() {
+      return this.$refs.form.validate();
+    },
     saveNewOrder() {
       let me = this;
       let header = { token: this.$store.state.token };
       let configuration = { headers: header };
       axios
         .post("sliders/updateIndex", { sliders: this.sliders }, configuration)
-        .then(function () {
+        .then(function() {
           me.$store.dispatch("setSnackbar", {
             text: "Se actualizó correctamente el orden de los Sliders.",
           });
           me.getSliders();
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text: "Hubo un error al actualizar el orden de los sliders, por favor actualice la página e intente nuevamente.",
+            text:
+              "Hubo un error al actualizar el orden de los sliders, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
     },
-    checkMove: function (e) {
+    checkMove: function(e) {
       this.newOrder = true;
     },
     deleteSliderImg() {
@@ -211,10 +246,10 @@ export default {
       let me = this;
       axios
         .get("sliders")
-        .then(function (response) {
+        .then(function(response) {
           me.sliders = response.data;
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
@@ -226,83 +261,87 @@ export default {
       }
     },
     uploadSlider() {
-      if (this.imageFile === "") {
-        return;
+      if (this.validate()) {
+        if (this.imageFile === "") {
+          return;
+        }
+        this.loadingLogo = true;
+        let me = this;
+        let formData = new FormData();
+
+        formData.append("title", this.editedItem.title);
+        formData.append("subtitle", this.editedItem.subtitle);
+        formData.append("buttonText", this.editedItem.buttonText);
+        formData.append("buttonURL", this.editedItem.buttonURL);
+        formData.append("image", this.imageFile);
+
+        axios
+          .post("sliders", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              token: me.$store.state.token,
+            },
+          })
+          .then(function() {
+            me.loadingLogo = false;
+            me.$store.dispatch("setSnackbar", {
+              text: "Se subió correctamente el slider.",
+            });
+            me.cleanForm();
+            me.getSliders();
+          })
+          .catch(function(error) {
+            console.log(error);
+            me.$store.dispatch("setSnackbar", {
+              text:
+                "Hubo un error al subir el slider, por favor actualice la página e intente nuevamente.",
+              color: "error",
+            });
+          });
+        this.dialog = false;
       }
-      this.loadingLogo = true;
-      let me = this;
-      let formData = new FormData();
-
-      formData.append("title", this.editedItem.title);
-      formData.append("subtitle", this.editedItem.subtitle);
-      formData.append("buttonText", this.editedItem.buttonText);
-      formData.append("buttonURL", this.editedItem.buttonURL);
-      formData.append("image", this.imageFile);
-
-      axios
-        .post("sliders", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            token: me.$store.state.token,
-          },
-        })
-        .then(function () {
-          me.loadingLogo = false;
-          me.$store.dispatch("setSnackbar", {
-            text: "Se subió correctamente el slider.",
-          });
-          me.cleanForm();
-          me.getSliders();
-        })
-        .catch(function (error) {
-          console.log(error);
-          me.$store.dispatch("setSnackbar", {
-            text: "Hubo un error al subir el slider, por favor actualice la página e intente nuevamente.",
-            color: "error",
-          });
-        });
-      this.dialog = false;
     },
     updateSlider() {
-      this.loadingLogo = true;
-      let me = this;
-      let formData = new FormData();
+      if (this.validate()) {
+        this.loadingLogo = true;
+        let me = this;
+        let formData = new FormData();
+        formData.append("_id", this.editedItem._id);
+        formData.append("title", this.editedItem.title);
+        formData.append("subtitle", this.editedItem.subtitle);
+        formData.append("buttonText", this.editedItem.buttonText);
+        formData.append("buttonURL", this.editedItem.buttonURL);
+        formData.append("newSliderImg", this.newSliderImg);
+        if (this.newSliderImg) {
+          formData.append("image", this.imageFile);
+        }
 
-      formData.append("_id", this.editedItem._id);
-      formData.append("title", this.editedItem.title);
-      formData.append("subtitle", this.editedItem.subtitle);
-      formData.append("buttonText", this.editedItem.buttonText);
-      formData.append("buttonURL", this.editedItem.buttonURL);
-      formData.append("newSliderImg", this.newSliderImg);
-      if (this.newSliderImg) {
-        formData.append("image", this.imageFile);
+        axios
+          .put("sliders", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              token: me.$store.state.token,
+            },
+          })
+          .then(function() {
+            me.loadingLogo = false;
+            me.$store.dispatch("setSnackbar", {
+              text: "Se actualizó correctamente el slider.",
+            });
+            me.cleanForm();
+            me.getSliders();
+          })
+          .catch(function(error) {
+            console.log(error);
+            me.$store.dispatch("setSnackbar", {
+              text:
+                "Hubo un error al actualizar el slider, por favor actualice la página e intente nuevamente.",
+              color: "error",
+            });
+          });
+        this.dialog = false;
+        this.newSliderImg = false;
       }
-
-      axios
-        .put("sliders", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            token: me.$store.state.token,
-          },
-        })
-        .then(function () {
-          //me.updateNewLogo();
-          me.loadingLogo = false;
-          me.$store.dispatch("setSnackbar", {
-            text: "Se actualizó correctamente el slider.",
-          });
-          me.cleanForm();
-          me.getSliders();
-        })
-        .catch(function (error) {
-          console.log(error);
-          me.$store.dispatch("setSnackbar", {
-            text: "Hubo un error al actualizar el slider, por favor actualice la página e intente nuevamente.",
-            color: "error",
-          });
-        });
-      this.dialog = false;
-      this.newSliderImg = false;
     },
     deleteSlider(slider) {
       let me = this;
@@ -315,13 +354,14 @@ export default {
               token: me.$store.state.token,
             },
           })
-          .then(function () {
+          .then(function() {
+            me.cleanForm();
             me.getSliders();
             me.$store.dispatch("setSnackbar", {
               text: `Se eliminó correctamente al slider.`,
             });
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.log(error);
             me.$store.dispatch("setSnackbar", {
               text: `No se pudo eliminar al slider, por favor actualice e intente nuevamente.`,
@@ -340,10 +380,11 @@ export default {
       this.editedItem.sliderImg = "";
       this.dialog = false;
       this.editedIndex = -1;
+      this.imageUploaded = null;
     },
   },
   watch: {
-    imageUploaded: function () {
+    imageUploaded: function() {
       this.imageFile = event.target.files[0];
     },
   },

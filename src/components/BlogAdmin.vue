@@ -309,7 +309,7 @@ export default {
       let me = this;
       if (this.editedIndex > -1) {
         axios
-          .put("posts/update", {
+          .put("posts", {
             // _id: this.editedItem._id,
             // code: this.editedItem.code,
             // name: this.editedItem.name,
@@ -335,7 +335,7 @@ export default {
         formData.append("tags", "asd4"); //this.editedItem.tags
 
         axios
-          .post("posts/add", formData, {
+          .post("posts", formData, {
             headers: {
               Accept: "text/plain",
             },

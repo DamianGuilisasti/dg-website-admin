@@ -1,12 +1,12 @@
 <template>
   <div>
-    <h1 class="pb-6">Gastos</h1>
+    <h1 class="pb-6">Menu</h1>
     <v-card>
       <v-data-table
         :headers="headers"
-        :items="expenses"
+        :items="menus"
         :search="search"
-        no-data-text="No hay información de gastos, por favor cargue nuevos gastos."
+        no-data-text="No hay información de menu, por favor cargue nuevos menus."
       >
         <template v-slot:item.state="{ item }">
           <v-chip :color="getStateColor(item.state)" dark>
@@ -35,7 +35,7 @@
                     class="mb-2"
                     v-bind="attrs"
                     v-on="on"
-                    >Agregar Gasto</v-btn
+                    >Agregar Menu</v-btn
                   >
                 </template>
                 <v-card>
@@ -56,10 +56,9 @@
 
                         <v-col cols="12">
                           <v-text-field
-                            v-model.number="editedItem.price"
-                            type="number"
-                            label="Precio"
-                            :rules="priceRules"
+                            v-model="editedItem.link"
+                            label="Link"
+                            :rules="linkRules"
                           ></v-text-field>
                         </v-col>
                       </v-row>
@@ -96,6 +95,29 @@
         </template></v-data-table
       >
     </v-card>
+
+    <h1 class="pt-6">Orden del menu</h1>
+    <v-row align="center">
+      <v-col cols="12">
+        <v-select
+          v-model="items"
+          :items="menus"
+          item-text="name"
+          attach
+          chips
+          label="Orden"
+          multiple
+          return-object
+        ></v-select>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-btn color="success" class="mr-3" @click="saveNewOrder"
+          >Guardar orden</v-btn
+        ></v-col
+      ></v-row
+    >
   </div>
 </template>
 
@@ -107,7 +129,7 @@ export default {
     editedIndex: -1,
     editedItem: {
       name: "",
-      price: "",
+      link: "",
     },
     search: "",
     headers: [
@@ -118,15 +140,16 @@ export default {
         value: "name",
       },
       {
-        text: "Precio",
+        text: "Link",
         filterable: true,
-        value: "price",
+        value: "link",
       },
       { text: "Estado", filterable: true, value: "state" },
       { text: "Acciones", value: "actions" },
     ],
     nameRules: [(v) => !!v || "El nombre es requerido"],
-    priceRules: [(v) => !!v || "El precio es requerido"],
+    linkRules: [(v) => !!v || "El precio es requerido"],
+    items: [],
   }),
   methods: {
     getStateColor(state) {
@@ -138,28 +161,62 @@ export default {
       else return "Desactivado";
     },
 
+    async saveNewOrder() {
+      try {
+        if (this.items.length < this.menus.length) {
+          this.$store.dispatch("setSnackbar", {
+            text: `Todos los items deben estar seleccionados.`,
+            color: "red",
+          });
+          return;
+        }
+        const result = await this.$store.dispatch(
+          "menus/saveNewOrder",
+          { menus: this.items },
+          {
+            root: true,
+          }
+        );
+        if (result.status === 204) {
+          await this.$store.dispatch("menus/getMenus", null, {
+            root: true,
+          });
+
+          this.$store.dispatch("setSnackbar", {
+            text: `Se guardó correctamente el nuevo orden del menu.`,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        this.$store.dispatch("setSnackbar", {
+          text: `No se pudo guardar el nuevo orden.`,
+          color: "red",
+        });
+      }
+    },
+
     async activateItem(item) {
       try {
         const result = await this.$store.dispatch(
-          "expenses/activateItem",
+          "menus/activateItem",
           { _id: item._id },
           {
             root: true,
           }
         );
         if (result.status === 204) {
-          await this.$store.dispatch("expenses/getExpenses", null, {
+          await this.$store.dispatch("menus/getMenus", null, {
             root: true,
           });
 
           this.$store.dispatch("setSnackbar", {
-            text: `Se activó correctamente el gasto.`,
+            text: `Se activó correctamente el menu.`,
           });
         }
       } catch (error) {
         console.log(error);
         this.$store.dispatch("setSnackbar", {
-          text: `No se pudo activar el gasto.`,
+          text: `No se pudo activar el menu.`,
           color: "red",
         });
       }
@@ -168,43 +225,45 @@ export default {
     async desactivateItem(item) {
       try {
         const result = await this.$store.dispatch(
-          "expenses/desactivateItem",
+          "menus/desactivateItem",
           { _id: item._id },
           {
             root: true,
           }
         );
         if (result.status === 204) {
-          await this.$store.dispatch("expenses/getExpenses", null, {
+          await this.$store.dispatch("menus/getMenus", null, {
             root: true,
           });
 
           this.$store.dispatch("setSnackbar", {
-            text: `Se desactivó correctamente el gasto.`,
+            text: `Se desactivó correctamente el menu.`,
           });
         }
       } catch (error) {
         console.log(error);
         this.$store.dispatch("setSnackbar", {
-          text: `No se pudo desactivar el gasto.`,
+          text: `No se pudo desactivar el menu.`,
           color: "red",
         });
       }
     },
 
     editItem(item) {
-      this.editedIndex = this.expenses.indexOf(item);
+      console.log(item);
+      this.editedIndex = this.menus.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
 
     async deleteItem(item) {
       try {
-        let expenseId = item._id;
-        const params = { id: expenseId };
-        if (confirm("Estás a punto de eliminar el gasto ¿Continuar?")) {
+        let menuId = item._id;
+
+        const params = { id: menuId };
+        if (confirm("Estás a punto de eliminar el menu ¿Continuar?")) {
           const result = await this.$store.dispatch(
-            "expenses/deleteExpense",
+            "menus/deleteMenu",
             params,
             {
               root: true,
@@ -212,19 +271,19 @@ export default {
           );
 
           if (result.status === 204) {
-            await this.$store.dispatch("expenses/getExpenses", null, {
+            await this.$store.dispatch("menus/getMenus", null, {
               root: true,
             });
 
             this.$store.dispatch("setSnackbar", {
-              text: `Se eliminó correctamente el gasto.`,
+              text: `Se eliminó correctamente el menu.`,
             });
           }
         }
       } catch (error) {
         console.log(error);
         this.$store.dispatch("setSnackbar", {
-          text: `No se pudo eliminar el gasto.`,
+          text: `No se pudo eliminar el menu.`,
           color: "red",
         });
       }
@@ -245,10 +304,10 @@ export default {
             const params = {
               _id: this.editedItem._id,
               name: this.editedItem.name,
-              price: this.editedItem.price,
+              link: this.editedItem.link,
             };
             const result = await this.$store.dispatch(
-              "expenses/updateExpense",
+              "menus/updateMenu",
               params,
               {
                 root: true,
@@ -256,13 +315,13 @@ export default {
             );
             if (result.status === 204) {
               this.$store.dispatch("setSnackbar", {
-                text: `Se actualizó correctamente el gasto.`,
+                text: `Se actualizó correctamente el menu.`,
               });
             }
           } catch (error) {
             console.log(error);
             this.$store.dispatch("setSnackbar", {
-              text: `No se pudo actualizar el gasto.`,
+              text: `No se pudo actualizar el menu.`,
               color: "red",
             });
           }
@@ -270,11 +329,11 @@ export default {
           try {
             const params = {
               name: this.editedItem.name,
-              price: this.editedItem.price,
+              link: this.editedItem.link,
             };
 
             const result = await this.$store.dispatch(
-              "expenses/createExpense",
+              "menus/createMenu",
               params,
               {
                 root: true,
@@ -282,18 +341,18 @@ export default {
             );
             if (result.status === 201) {
               this.$store.dispatch("setSnackbar", {
-                text: `Se agregó correctamente el gasto.`,
+                text: `Se agregó correctamente el menu.`,
               });
             }
           } catch (error) {
             console.log(error);
             this.$store.dispatch("setSnackbar", {
-              text: `No se pudo crear el gasto.`,
+              text: `No se pudo crear el menu.`,
               color: "red",
             });
           }
         }
-        await this.$store.dispatch("expenses/getExpenses", null, {
+        await this.$store.dispatch("menus/getMenus", null, {
           root: true,
         });
         this.close();
@@ -302,13 +361,12 @@ export default {
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "Nuevo gasto" : "Editar gasto";
+      return this.editedIndex === -1 ? "Nuevo menu" : "Editar menu";
     },
-
-    ...mapGetters("expenses", ["expenses"]),
+    ...mapGetters("menus", ["menus"]),
   },
   async created() {
-    await this.$store.dispatch("expenses/getExpenses", null, {
+    await this.$store.dispatch("menus/getMenus", null, {
       root: true,
     });
   },

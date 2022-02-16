@@ -250,7 +250,7 @@ export default {
       if (this.editedIndex > -1) {
         axios
           .put(
-            "clientservices/update",
+            "clientservices",
             {
               _id: this.editedItem._id,
               name: this.editedItem.name,
@@ -275,7 +275,7 @@ export default {
         let configuration = { headers: header };
         axios
           .post(
-            "clientservices/add",
+            "clientservices",
             {
               name: this.editedItem.name,
               description: this.editedItem.description,
