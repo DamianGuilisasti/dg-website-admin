@@ -2,13 +2,8 @@
   <v-app>
     <v-main class="main">
       <v-container class="container" fluid>
-        <!-- fill-height -->
         <v-row align="center" class="no-gutters">
-          <v-col
-            cols="12"
-            lg="12"
-            class="d-flex justify-center align-center col-right"
-          >
+          <v-col cols="12" class="d-flex justify-center align-center col-right">
             <div class="login-wrapper pt-sm-0">
               <div class="my-16">
                 <p class="display-2 text-center font-weight-medium my-10">
@@ -17,24 +12,28 @@
                 <v-form>
                   <v-text-field
                     :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-                    id="password"
                     label="Contraseña"
                     name="password"
                     prepend-icon="mdi-lock"
                     :type="show ? 'text' : 'password'"
-                    v-model="password"
+                    v-model="newpassword"
+                    maxlength="20"
                     @click:append="show = !show"
                   ></v-text-field>
 
                   <v-text-field
-                    :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-                    id="password"
+                    :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
                     label="Volvé a introducir la contraseña"
                     name="password"
                     prepend-icon="mdi-lock"
-                    :type="show ? 'text' : 'password'"
-                    v-model="confirmpassword"
-                    @click:append="show = !show"
+                    :type="show2 ? 'text' : 'password'"
+                    :rules="[
+                      newpassword === confirmnewpassword ||
+                        'Las nuevas contraseñas no coinciden.',
+                    ]"
+                    maxlength="20"
+                    v-model="confirmnewpassword"
+                    @click:append="show2 = !show2"
                   ></v-text-field>
 
                   <v-flex class="red--text" v-if="errorMessage">
@@ -67,39 +66,47 @@
 </template>
 
 <script>
-import axios from "axios";
 export default {
   data: () => ({
     email: "",
-    password: "",
-    confirmpassword: "",
+    newpassword: "",
+    confirmnewpassword: "",
     errorMessage: null,
     show: false,
+    show2: false,
   }),
   methods: {
-    resetPassword() {
-      let me = this;
-      me.$store.dispatch("setLoadingOverlay");
-      axios
-        .post(`/user/resetpassword/${this.$route.params.token}`, {
-          password: this.password,
-          confirmpassword: this.confirmpassword,
-        })
-        .then(function () {
-          me.$store.dispatch("removeLoadingOverlay");
-          me.$store.dispatch("setSnackbar", {
-            text: `Se actualizó correctamente la contraseña.`,
-          });
-          this.$router.push({ name: "Login" });
-        })
-        .catch(function (error) {
-          if (error.response.status === 404 || 401) {
-            me.$store.dispatch("setSnackbar", {
-              text: `No se pudo actualizar la contraseña.`,
-              color: "red",
-            });
+    async resetPassword() {
+      try {
+        this.$store.dispatch("setLoadingOverlay");
+        const result = await this.$store.dispatch(
+          "users/resetPassword",
+          {
+            token: this.$route.params.token,
+            password: this.newpassword,
+            confirmpassword: this.confirmnewpassword,
+          },
+          {
+            root: true,
           }
-        });
+        );
+
+        if (result.status === 200) {
+          this.$store.dispatch("removeLoadingOverlay");
+          this.$store.dispatch("setSnackbar", {
+            text: `Se actualizó correctamente la contraseña`,
+          });
+          this.$router.push("/login");
+        }
+      } catch (error) {
+        if (error.response.status === 404 || 401) {
+          this.$store.dispatch("setSnackbar", {
+            text: `No se pudo actualizar la contraseña.`,
+            color: "red",
+          });
+          this.$router.push("/login");
+        }
+      }
     },
   },
 };
@@ -160,4 +167,3 @@ body {
   //overflow: hidden;
 }
 </style>
-

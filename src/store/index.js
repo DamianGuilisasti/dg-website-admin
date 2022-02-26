@@ -6,6 +6,202 @@ import router from "../router/index";
 
 Vue.use(Vuex);
 
+const users = {
+  namespaced: true,
+  state: { users: [] },
+  mutations: {
+    setUser(state, payload) {
+      state.users = payload;
+    },
+  },
+  actions: {
+    async login({ commit }, payload) {
+      const response = await Repository.post(`/users/login`, payload);
+      return response;
+    },
+    async forgotPassword({ commit }, payload) {
+      const response = await Repository.post(`/users/forgotPassword`, payload);
+      return response;
+    },
+    async resetPassword({ commit }, payload) {
+      const response = await Repository.post(
+        `/users/resetpassword/${payload.token}`,
+        payload
+      );
+      return response;
+    },
+    async getUser({ commit }, payload) {
+      const response = await Repository.get(`/users`, {
+        headers: { token: this.state.token },
+      });
+      commit("setUser", response.data);
+    },
+  },
+  getters: {
+    users: (state) => {
+      return state.users;
+    },
+  },
+};
+
+const sliders = {
+  namespaced: true,
+  state: { sliders: [] },
+  mutations: {
+    setSliders(state, payload) {
+      state.sliders = payload;
+    },
+  },
+  actions: {
+    async createSlider({ commit }, payload) {
+      const response = await Repository.post(`/sliders`, payload, {
+        headers: {
+          token: this.state.token,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      commit("setSliders", response.data);
+      return response;
+    },
+    async createVideoSlider({ commit }, payload) {
+      const response = await Repository.post(`/sliders/video`, payload, {
+        headers: {
+          token: this.state.token,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      commit("setSliders", response.data);
+      return response;
+    },
+    async updateSlider({ commit }, payload) {
+      const response = await Repository.put(`/sliders`, payload, {
+        headers: {
+          token: this.state.token,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      commit("setSliders", response.data);
+      return response;
+    },
+    async setSlidersOrder({ commit }, payload) {
+      const response = await Repository.post(
+        `/sliders/setSlidersOrder`,
+        payload,
+        {
+          headers: {
+            token: this.state.token,
+          },
+        }
+      );
+      commit("setSliders", response.data);
+      return response;
+    },
+
+    async createBackgroundImageSlider({ commit }, payload) {
+      const response = await Repository.put(
+        `/settings/createBackgroundImageSlider`,
+        payload,
+        {
+          headers: {
+            token: this.state.token,
+          },
+        }
+      );
+      return response;
+    },
+    async activeBackgroundVideo({ commit }, payload) {
+      const response = await Repository.put(
+        `/settings/activeBackgroundVideo`,
+        payload,
+        {
+          headers: {
+            token: this.state.token,
+          },
+        }
+      );
+      commit("setSliders", response.data);
+      return response;
+    },
+    async deleteBackgroundVideo({ commit }, payload) {
+      const response = await Repository.put(
+        `/sliders/deleteBackgroundVideo`,
+        payload,
+        {
+          headers: {
+            token: this.state.token,
+          },
+        }
+      );
+      commit("setSliders", response.data);
+      return response;
+    },
+    async deleteBackgroundVideoImage({ commit }, payload) {
+      const response = await Repository.put(
+        `/settings/deleteBackgroundVideoImage`,
+        payload,
+        {
+          headers: {
+            token: this.state.token,
+          },
+        }
+      );
+      commit("setSliders", response.data);
+      return response;
+    },
+    async setSliderOverlayLevel({ commit }, payload) {
+      const response = await Repository.put(
+        `/settings/setSliderOverlayLevel`,
+        payload,
+        {
+          headers: { token: this.state.token },
+        }
+      );
+      return response;
+    },
+    async getSliders({ commit }, payload) {
+      const response = await Repository.get(`/sliders`, {
+        headers: { token: this.state.token },
+      });
+      commit("setSliders", response.data);
+    },
+    async deleteSlider({ commit }, params, payload) {
+      const response = await Repository.delete(`/sliders`, {
+        headers: { token: this.state.token },
+        params: params,
+      });
+      return response;
+    },
+  },
+  getters: {
+    sliders: (state) => {
+      return state.sliders;
+    },
+  },
+};
+
+const settings = {
+  namespaced: true,
+  state: { settings: [] },
+  mutations: {
+    setSettings(state, payload) {
+      state.settings = payload;
+    },
+  },
+  actions: {
+    async getSettings({ commit }, payload) {
+      const response = await Repository.get(`/settings`, {
+        headers: { token: this.state.token },
+      });
+      commit("setSettings", response.data);
+    },
+  },
+  getters: {
+    settings: (state) => {
+      return state.settings;
+    },
+  },
+};
+
 const calltoactions = {
   namespaced: true,
   state: { calltoactions: [] },
@@ -280,5 +476,8 @@ export default new Vuex.Store({
     expenses: expenses,
     menus: menus,
     calltoactions: calltoactions,
+    settings: settings,
+    sliders: sliders,
+    users: users,
   },
 });

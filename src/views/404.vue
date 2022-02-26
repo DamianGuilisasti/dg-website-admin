@@ -1,7 +1,5 @@
 <template>
   <div>
-    <!-- Start Header Area -->
-    <!-- End Header Area -->
     <!-- Start 404 Page  -->
     <div class="error-page-inner bg_color--4">
       <v-container>
@@ -13,7 +11,7 @@
               <span>La página que estabas buscando no existe.</span>
               <div class="error-button">
                 <router-link class="rn-button-style--2 btn_solid" to="/"
-                  >Volver al Inicio</router-link
+                  >Volver al inicio</router-link
                 >
               </div>
             </div>
@@ -21,31 +19,6 @@
         </v-row>
       </v-container>
     </div>
+    <!-- End 404 Page  -->
   </div>
 </template>
-
-<script>
-import axios from "axios";
-export default {
-  components: {},
-  data() {
-    return { imageURL: "" };
-  },
-  methods: {
-    getSettings() {
-      let me = this;
-      axios
-        .get("settings")
-        .then(function (response) {
-          me.imageURL = response.data[0].logoURL.imageURL;
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    },
-  },
-  created() {
-    this.getSettings();
-  },
-};
-</script>

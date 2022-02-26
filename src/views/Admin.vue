@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app v-if="settingsData">
     <v-navigation-drawer v-model="drawer" app>
       <v-list dense nav>
         <v-list-item>
@@ -353,6 +353,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import axios from "axios";
 export default {
   name: "AdminView",
@@ -360,8 +361,6 @@ export default {
     drawer: null,
     userInfo: { rol: [{ name: "" }] },
     initials: "",
-    companyName: "",
-    dataId: "",
   }),
   computed: {
     website() {
@@ -373,6 +372,16 @@ export default {
         "." +
         window.location.hostname.split(".")[3]
       );
+    },
+    ...mapGetters("settings", ["settings"]),
+    settingsData() {
+      return this.settings[0];
+    },
+    companyName() {
+      return this.settings[0].companyName;
+    },
+    dataId() {
+      return this.settings[0]._id;
     },
   },
   methods: {
@@ -401,20 +410,7 @@ export default {
           console.log(error);
         });
     },
-    getSettings() {
-      let me = this;
-      axios
-        .get("settings")
-        .then(function(response) {
-          me.companyName = response.data[0].companyName;
-          me.dataId = response.data[0]._id;
-          me.setCompanyURL();
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
-    },
-    getUserInfo() {
+    getUserInfo() { //obtener el usuario y ponerlo en el state en APP. y en el state guardar las initials.
       let me = this;
       let header = { token: this.$store.state.token };
       let configuration = { headers: header };
@@ -443,7 +439,6 @@ export default {
   async created() {
     this.$store.dispatch("autoLogin");
     this.getUserInfo();
-    this.getSettings();
 
     //this.getTheme();
   },

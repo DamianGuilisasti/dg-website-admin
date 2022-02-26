@@ -388,7 +388,7 @@ export default {
       let me = this;
       axios
         .get("settings")
-        .then(function (response) {
+        .then(function(response) {
           me.aboutInfo = response.data[0].aboutInfo;
           me.companyName = response.data[0].companyName;
           me.companyPhone = response.data[0].companyPhone;
@@ -406,7 +406,7 @@ export default {
           me.dataId = response.data[0]._id;
           me.companyImg = response.data[0].companyImg.imageURL;
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
@@ -416,17 +416,18 @@ export default {
       let configuration = { headers: header };
       axios
         .put("settings/deleteCompanyImg", { _id: this.dataId }, configuration)
-        .then(function () {
+        .then(function() {
           me.imageUploaded = null;
           me.updateNewCompanyImg();
           me.$store.dispatch("setSnackbar", {
             text: "Se eliminó correctamente la imagen.",
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text: "Hubo un error al eliminar la imagen, por favor actualice la página e intente nuevamente.",
+            text:
+              "Hubo un error al eliminar la imagen, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -437,17 +438,18 @@ export default {
       let configuration = { headers: header };
       axios
         .put("settings/deleteLogo", { _id: this.dataId }, configuration)
-        .then(function () {
+        .then(function() {
           me.imageUploaded = null;
           me.updateNewLogo();
           me.$store.dispatch("setSnackbar", {
             text: "Se eliminó correctamente el logo.",
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text: "Hubo un error al eliminar el logo, por favor actualice la página e intente nuevamente.",
+            text:
+              "Hubo un error al eliminar el logo, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -457,10 +459,10 @@ export default {
 
       axios
         .get("settings")
-        .then(function (response) {
+        .then(function(response) {
           me.companyImg = response.data[0].companyImg.imageURL;
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
@@ -468,10 +470,10 @@ export default {
       let me = this;
       axios
         .get("settings")
-        .then(function (response) {
+        .then(function(response) {
           me.imageURL = response.data[0].logoURL.imageURL;
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     },
@@ -492,15 +494,16 @@ export default {
           },
           configuration
         )
-        .then(function (response) {
+        .then(function(response) {
           me.$store.dispatch("setSnackbar", {
             text: "Se actualizo correctamente la información.",
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text: "Hubo un error al actualizar la información, por favor actualice la página e intente nuevamente.",
+            text:
+              "Hubo un error al actualizar la información, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -523,15 +526,16 @@ export default {
           },
           configuration
         )
-        .then(function (response) {
+        .then(function(response) {
           me.$store.dispatch("setSnackbar", {
             text: "Se actuxalizo correctamente las redes sociales.",
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text: "Hubo un error al actualizar las redes sociales, por favor actualice la página e intente nuevamente.",
+            text:
+              "Hubo un error al actualizar las redes sociales, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -550,15 +554,16 @@ export default {
           },
           configuration
         )
-        .then(function (response) {
+        .then(function(response) {
           me.$store.dispatch("setSnackbar", {
             text: "Se actualizo correctamente la información de Whatsapp.",
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text: "Hubo un error al actualizar la información de Whatsapp, por favor actualice la página e intente nuevamente.",
+            text:
+              "Hubo un error al actualizar la información de Whatsapp, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -583,17 +588,18 @@ export default {
             token: this.$store.state.token,
           },
         })
-        .then(function (response) {
+        .then(function(response) {
           me.updateNewLogo();
           me.loadingLogo = false;
           me.$store.dispatch("setSnackbar", {
             text: "Se actualizo correctamente el logo.",
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text: "Hubo un error al actualizar el logo, por favor actualice la página e intente nuevamente.",
+            text:
+              "Hubo un error al actualizar el logo, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
@@ -618,24 +624,27 @@ export default {
             token: this.$store.state.token,
           },
         })
-        .then(function (response) {
+        .then(function(response) {
           me.updateNewCompanyImg();
           me.loadingLogo = false;
+          me.imageFile = "";
+          me.imageUploaded = null;
           me.$store.dispatch("setSnackbar", {
             text: "Se actualizo correctamente la imagen.",
           });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
           me.$store.dispatch("setSnackbar", {
-            text: "Hubo un error al actualizar el logo, por favor actualice la página e intente nuevamente.",
+            text:
+              "Hubo un error al actualizar el logo, por favor actualice la página e intente nuevamente.",
             color: "error",
           });
         });
     },
   },
   watch: {
-    imageUploaded: function () {
+    imageUploaded: function() {
       this.imageFile = event.target.files[0];
     },
   },

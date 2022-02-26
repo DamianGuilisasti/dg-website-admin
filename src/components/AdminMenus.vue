@@ -26,7 +26,7 @@
               ></v-text-field>
             </v-card-title>
             <v-spacer></v-spacer>
-            <v-form ref="form">
+            <v-form ref="form" v-model="valid" lazy-validation>
               <v-dialog v-model="dialog" max-width="500px">
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
@@ -125,6 +125,7 @@
 import { mapGetters } from "vuex";
 export default {
   data: () => ({
+    valid: true,
     dialog: false,
     editedIndex: -1,
     editedItem: {
@@ -355,6 +356,7 @@ export default {
         await this.$store.dispatch("menus/getMenus", null, {
           root: true,
         });
+        this.$refs.form.reset();
         this.close();
       }
     },

@@ -2,19 +2,18 @@
   <v-app>
     <v-main class="main">
       <v-container class="container" fluid>
-        <!-- fill-height -->
         <v-row align="center" class="no-gutters">
           <v-col lg="7" class="d-flex justify-center align-center col-left">
             <div>
               <v-row>
                 <v-col cols="12">
                   <v-img
-                    v-if="imageURL"
+                    v-if="settingsData"
                     class="panel-img"
-                    :lazy-src="imageURL"
+                    :lazy-src="logo"
                     max-height="100%"
                     max-width="30%"
-                    :src="imageURL"
+                    :src="logo"
                   >
                   </v-img>
                 </v-col>
@@ -127,13 +126,9 @@
 </template>
 
 <script>
-import axios from "axios";
+import { mapGetters } from "vuex";
 export default {
-  props: {
-    source: String,
-  },
   data: () => ({
-    imageURL: "",
     email: "",
     password: "",
     errorMessage: null,
@@ -142,61 +137,67 @@ export default {
     resetEmail: "",
   }),
   methods: {
-    getSettings() {
-      let me = this;
-      axios
-        .get("settings")
-        .then(function (response) {
-          me.imageURL = response.data[0].logoURL.imageURL;
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    },
-    forgotPassword() {
-      let me = this;
-      me.$store.dispatch("setLoadingOverlay");
-      axios
-        .post("/users/forgotpassword", { email: this.resetEmail })
-        .then(function () {
-          me.$store.dispatch("removeLoadingOverlay");
-          me.$store.dispatch("setSnackbar", {
-            text: `Se envío un email a tu correo para que puedas restablecer tu contraseña.`,
+    async forgotPassword() {
+      try {
+        this.$store.dispatch("setLoadingOverlay");
+        const result = await this.$store.dispatch(
+          "users/forgotPassword",
+          { email: this.resetEmail },
+          {
+            root: true,
+          }
+        );
+
+        if (result.status === 200) {
+          this.$store.dispatch("removeLoadingOverlay");
+          this.$store.dispatch("setSnackbar", {
+            text: `Se envió un correo a tu email para que puedas restablecer tu contraseña.`,
           });
-        })
-        .catch(function (error) {
-          console.log(error);
-          if (error.response.status === 404 || 401) {
-            me.$store.dispatch("setSnackbar", {
-              text: `No existe un usuario con este email.`,
-              color: "red",
-            });
-          }
-        });
+        }
+      } catch (error) {
+        if (error.response.status === 404 || 401) {
+          this.$store.dispatch("setSnackbar", {
+            text: `No existe un usuario con este email.`,
+            color: "red",
+          });
+        }
+      }
     },
-    login() {
-      let me = this;
-      axios
-        .post("/users/login", { email: this.email, password: this.password })
-        .then((response) => {
-          return response.data;
-        })
-        .then((data) => {
-          this.$store.dispatch("saveToken", data.token);
-          this.$router.push({ name: "Dashboard" });
-        })
-        .catch(function (error) {
-          if (error.response.status === 404 || 401) {
-            me.$store.dispatch("setSnackbar", {
-              text: `Usuario o contraseña incorrecta.`,
-              color: "red",
-            });
+    async login() {
+      try {
+        const result = await this.$store.dispatch(
+          "users/login",
+          {
+            email: this.email,
+            password: this.password,
+          },
+          {
+            root: true,
           }
-        });
+        );
+
+        if (result.status === 200) {
+          this.$store.dispatch("saveToken", result.data.token);
+          this.$router.push({ name: "Dashboard" });
+        }
+      } catch (error) {
+        if (error.response.status === 404 || 401) {
+          this.$store.dispatch("setSnackbar", {
+            text: `Usuario o contraseña incorrecta.`,
+            color: "red",
+          });
+        }
+      }
     },
   },
-  created() {
-    this.getSettings();
+  computed: {
+    ...mapGetters("settings", ["settings"]),
+    settingsData() {
+      return this.settings[0];
+    },
+    logo() {
+      return this.settings[0].logoURL.imageURL;
+    },
   },
 };
 </script>
@@ -256,4 +257,3 @@ body {
   //overflow: hidden;
 }
 </style>
-

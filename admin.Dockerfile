@@ -12,6 +12,10 @@ RUN npm run build
 
 FROM nginx:latest AS prod-stage
 
+COPY nginx.conf /temp/prod.conf
+
+RUN envsubst /frontend < /temp/prod.conf > /etc/nginx/conf.d/default.conf
+
 WORKDIR /usr/share/nginx/html
 
 RUN rm -rf ./*

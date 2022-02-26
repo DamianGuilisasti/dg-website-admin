@@ -72,18 +72,9 @@
                             label="Texto"
                           ></v-text-field>
                         </v-col>
-                        <v-col
-                          cols="12"
-                          v-if="uploadedImage == null && editedItem.logo == ''"
-                        >
-                          <!--                           <div class="addNew d-flex" @click="inputClick">
-                            <v-row align="center">
-                              <v-col class="text-center">
-                                <v-icon size="40">mdi-plus</v-icon>
-                                <p>Agregar imagen</p>
-                              </v-col>
-                            </v-row>
-                          </div> -->
+                        {{ uploadedImage }}
+                        {{ editedItem.logo }}
+                        <v-col cols="12" v-if="uploadedImage == null">
                           <v-file-input
                             class="mt-5"
                             label="Logo del cliente"
@@ -187,14 +178,13 @@
 import axios from "axios";
 export default {
   data: () => ({
+    imageFile: "",
     valid: true,
     imageRules: [
       (v) => !!v || "El archivo es requerido",
       (v) => (v && v.size > 0) || "El archivo es requerido",
     ],
-    nameRules: [
-      (v) => !!v || "Este campo es requerido",
-    ],
+    nameRules: [(v) => !!v || "Este campo es requerido"],
     deletedLogoId: "",
     loadingData: true,
     imageUploaded: null,
@@ -229,7 +219,6 @@ export default {
   }),
   methods: {
     deleteSavedImages() {
-      console.log("jeje");
       if (this.uploadedImage && this.editedIndex == -1) {
         let me = this;
         let header = { token: this.$store.state.token };
@@ -253,20 +242,7 @@ export default {
     },
     validate() {
       return this.$refs.form.validate();
-      /*       if (this.editedItem.logo || this.uploadedImage) {
-        console.log(true);
-        return true;
-      } else {
-        console.log(false);
-        return false;
-      } */
     },
-    /*     inputClick() {
-      document
-        .getElementsByClassName("inpFile")[0]
-        .querySelector("button")
-        .click();
-    }, */
     deleteReviewImage(index) {
       this.deletedLogoId = index;
       this.editedItem.logo.url = "";
@@ -369,7 +345,7 @@ export default {
           .catch(function(error) {
             console.log(error);
           });
-      }else{
+      } else {
         this.cleanForm();
       }
 
@@ -437,6 +413,7 @@ export default {
             });
         }
         this.cleanForm();
+        this.$refs.form.reset();
         this.close();
       }
     },
@@ -445,6 +422,7 @@ export default {
       this.editedItem.text = "";
       this.editedItem.company = "";
       this.editedItem.logo = "";
+      this.imageUploaded = null;
       this.uploadedImage = null;
     },
     initialize() {
@@ -473,7 +451,9 @@ export default {
 
       let formData = new FormData();
 
-      formData.append("image", event.target.files[0]);
+      this.imageFile = event.target.files[0];
+
+      formData.append("image", this.imageFile);
 
       me.uploadingImages = true;
 

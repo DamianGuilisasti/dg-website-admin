@@ -93,10 +93,12 @@ export default {
       let configuration = { headers: header };
 
       //consultar si el password actual es correcto.
+      // solicitar password actual para cambiar a uno nuevo.
+      //ver esto.
 
       axios
         .put(
-          "/user/updateInEditAccount",
+          "/users/updateInEditAccount",
           {
             _id: this.userInfo._id,
             name: this.userInfo.name,

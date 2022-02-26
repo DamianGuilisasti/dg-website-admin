@@ -9,7 +9,6 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import LoadingOverlay from "./components/LoadingOverlay";
 import Snackbar from "./components/Snackbar";
 export default {
@@ -17,8 +16,8 @@ export default {
     LoadingOverlay,
     Snackbar,
   },
-  computed: {
-    ...mapState(["snackbar"]),
+  async created() {
+    await this.$store.dispatch("settings/getSettings", null, { root: true });
   },
 };
 </script>
