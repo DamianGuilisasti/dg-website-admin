@@ -95,6 +95,7 @@
                           <div class="image-preview" id="imagePreview">
                             <v-img
                               :src="uploadedImage.url"
+                              :lazy-src="uploadedImage.url"
                               height="120px"
                               width="auto"
                               alt="Image Preview"
@@ -119,6 +120,7 @@
                         <v-col v-if="editedItem.logo" class="servicesImages">
                           <v-img
                             :src="editedItem.logo.url"
+                            :lazy-src="editedItem.logo.url"
                             height="120px"
                             width="auto"
                             alt="Image Preview"

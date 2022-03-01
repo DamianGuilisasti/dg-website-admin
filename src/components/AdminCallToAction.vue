@@ -123,7 +123,6 @@
 
 <script>
 import { mapGetters } from "vuex";
-import axios from "axios";
 export default {
   data: () => ({
     imageFile: "",
@@ -131,13 +130,12 @@ export default {
     callToActionId: "",
     imageUploaded: null,
   }),
-  computed: {
-    ...mapGetters("calltoactions", ["calltoactions"]),
-    calltoaction() {
-      return this.calltoactions[0];
-    },
-  },
   methods: {
+    cleanForm() {
+      this.imageFile = "";
+      this.imageUploaded = null;
+      this.loadingLogo = false;
+    },
     async getCallToActions() {
       await this.$store.dispatch("calltoactions/getCallToActions", null, {
         root: true,
@@ -166,8 +164,6 @@ export default {
       await this.getCallToActions();
     },
     async updateBackgroundImage() {
-      let me = this;
-
       this.loadingLogo = true;
 
       if (!event.target.files) {
@@ -183,29 +179,28 @@ export default {
       formData.append("image", this.imageFile);
       formData.append("public_id", this.calltoaction.backgroundImg.public_id);
 
-      axios
-        .put("calltoactions/background", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            token: this.$store.state.token,
-          },
-        })
-        .then(async function(response) {
-          me.loadingLogo = false;
-          await me.getCallToActions();
-          me.$store.dispatch("setSnackbar", {
-            text: `Se agregó correctamente la imagen del CallToAction.`,
-          });
-        })
-        .catch(function(error) {
-          console.log(error);
-          me.loadingLogo = false;
-          me.$store.dispatch("setSnackbar", {
-            text: `No se pudo actualizar la imagen del CallToAction.`,
-            color: "red",
-          });
-          return;
+      const result = await this.$store.dispatch(
+        "calltoactions/updateBackgroundImage",
+        formData,
+        {
+          root: true,
+        }
+      );
+
+      if (result.status === 204) {
+        this.$store.dispatch("setSnackbar", {
+          text: `Se agregó correctamente la imagen del CallToAction.`,
         });
+        this.cleanForm();
+        await this.getCallToActions();
+      } else {
+        this.$store.dispatch("setSnackbar", {
+          text: `No se pudo actualizar la imagen del CallToAction.`,
+          color: "red",
+        });
+        this.cleanForm();
+        return;
+      }
     },
     async deleteBackgroundImage() {
       try {
@@ -262,6 +257,12 @@ export default {
           color: "red",
         });
       }
+    },
+  },
+  computed: {
+    ...mapGetters("calltoactions", ["calltoactions"]),
+    calltoaction() {
+      return this.calltoactions[0];
     },
   },
   async created() {

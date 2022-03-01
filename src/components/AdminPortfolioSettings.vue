@@ -28,6 +28,7 @@
               class="white--text align-end"
               height="200px"
               :src="slider.sliderImg.url"
+              :lazy-src="slider.sliderImg.url"
             >
               <v-card-title>{{ slider.title }}</v-card-title>
             </v-img>

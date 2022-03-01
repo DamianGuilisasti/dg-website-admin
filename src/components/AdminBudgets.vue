@@ -803,7 +803,6 @@ export default {
           };
         });
       };
-      console.log(this.companyImg);
       getBase64FromUrl(this.companyImg).then((data) => {
         this.imageBase64 = data;
       });

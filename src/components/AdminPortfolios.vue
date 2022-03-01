@@ -165,6 +165,7 @@
                                   >
                                     <v-img
                                       :src="image.url"
+                                      :lazy-src="image.url"
                                       height="120px"
                                       width="auto"
                                       alt="Image Preview"
@@ -205,6 +206,7 @@
                                   >
                                     <v-img
                                       :src="image.url"
+                                      :lazy-src="image.url"
                                       height="120px"
                                       width="auto"
                                       alt="Image Preview"

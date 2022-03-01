@@ -28,6 +28,7 @@
               class="white--text align-end"
               height="200px"
               :src="slider.sliderImg.url"
+              :lazy-src="slider.sliderImg.url"
             >
               <v-card-title>{{ slider.title }}</v-card-title>
             </v-img>
@@ -500,7 +501,6 @@ export default {
             return;
           }
           this.loadingLogo = true;
-          let me = this;
           let formData = new FormData();
 
           formData.append("title", this.editedItem.title);
@@ -509,14 +509,14 @@ export default {
           formData.append("buttonURL", this.editedItem.buttonURL);
           formData.append("image", this.file);
 
-          const result = await me.$store.dispatch(
+          const result = await this.$store.dispatch(
             "sliders/createSlider",
             formData,
             { root: true }
           );
           if (result.status === 204) {
-            await me.getSliders();
-            me.$store.dispatch("setSnackbar", {
+            await this.getSliders();
+            this.$store.dispatch("setSnackbar", {
               text: `Se agregó correctamente al slider.`,
             });
           }

@@ -26,6 +26,7 @@
         >
           <v-img
             :src="logo.logoImg.url"
+            :lazy-src="logo.logoImg.url"
             class="logoImg"
             height="200px"
             width="200px"

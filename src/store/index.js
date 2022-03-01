@@ -194,6 +194,12 @@ const settings = {
       });
       commit("setSettings", response.data);
     },
+    async updateColor({ commit }, payload) {
+      const response = await Repository.put(`/settings/updateColor`, payload, {
+        headers: { token: this.state.token },
+      });
+      return response;
+    },
   },
   getters: {
     settings: (state) => {
@@ -227,6 +233,19 @@ const calltoactions = {
       const response = await Repository.put(`/calltoactions`, payload, {
         headers: { token: this.state.token },
       });
+      return response;
+    },
+    async updateBackgroundImage({ commit }, payload) {
+      const response = await Repository.put(
+        `/calltoactions/background`,
+        payload,
+        {
+          headers: {
+            token: this.state.token,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       return response;
     },
     async deleteBackgroundImage({ commit }, payload) {

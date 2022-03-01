@@ -265,14 +265,14 @@
             </v-list-item-icon>
           </v-list-item>
 
-          <!--           <v-list-item link to="/admin/settings/colors">
+          <v-list-item link to="/admin/settings/colors">
             <v-list-item-content>
               <v-list-item-title>Colores</v-list-item-title>
             </v-list-item-content>
             <v-list-item-icon>
               <v-icon>mdi-palette</v-icon>
             </v-list-item-icon>
-          </v-list-item> -->
+          </v-list-item>
         </v-list-group>
 
         <v-divider></v-divider>
@@ -410,7 +410,8 @@ export default {
           console.log(error);
         });
     },
-    getUserInfo() { //obtener el usuario y ponerlo en el state en APP. y en el state guardar las initials.
+    getUserInfo() {
+      //obtener el usuario y ponerlo en el state en APP. y en el state guardar las initials.
       let me = this;
       let header = { token: this.$store.state.token };
       let configuration = { headers: header };
